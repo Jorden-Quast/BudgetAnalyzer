@@ -18,10 +18,10 @@ namespace BudgetAnalyzer
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddMudServices();
 
-#if DEBUG
+            #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
-#endif
+            #endif
 
             return builder.Build();
         }
