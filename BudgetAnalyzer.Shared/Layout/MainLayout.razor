@@ -1,0 +1,27 @@
+﻿@namespace BudgetAnalyzer.Shared.Layout
+@inherits LayoutComponentBase
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="() => _drawerOpen = !_drawerOpen" />
+        <MudSpacer />
+        <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+    </MudAppBar>
+
+    <MudDrawer Anchor="Anchor.Left" @bind-Open="_drawerOpen" On>
+        <NavMenu />
+    </MudDrawer>
+
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code{
+    bool _drawerOpen = false;
+}

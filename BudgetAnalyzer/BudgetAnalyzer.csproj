@@ -35,4 +35,8 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
         <PackageReference Include="MudBlazor" Version="7.6.0" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BudgetAnalyzer.Shared\BudgetAnalyzer.Shared.csproj" />
+    </ItemGroup>
 </Project>
