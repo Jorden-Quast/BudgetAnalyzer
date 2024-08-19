@@ -1,16 +1,12 @@
 ﻿@page "/"
+@inherits SubscribedComponent
 
 <MudText Typo="Typo.h1">Counter</MudText>
 
-<MudText Typo="Typo.body1">Current count: @currentCount</MudText>
+<MudText Typo="Typo.body1">Current count: @State.CounterValue</MudText>
 
 <MudButton Variant="Variant.Filled" OnClick="IncrementCount">I'm So Confused</MudButton>
 
 @code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
+    private void IncrementCount() => AddAction(new IncrementCounterAction(1));
 }

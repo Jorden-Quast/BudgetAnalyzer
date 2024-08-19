@@ -7,26 +7,7 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar>
-        <MudMenu Icon="@Icons.Material.Filled.Menu" AnchorOrigin="Origin.CenterCenter">
-            <MudMenuItem>Item 1</MudMenuItem>
-            <MudMenuItem>Item 2</MudMenuItem>
-            <MudMenuItem>Item 3</MudMenuItem>
-        </MudMenu>
-        <MudSpacer />
-
-        <MudButtonGroup Color="Color.Tertiary" Variant="Variant.Text">
-            <MudButton>
-                <MudNavLink Href="/" Match="NavLinkMatch.All">Counter</MudNavLink>
-            </MudButton>
-            <MudButton>
-                <MudNavLink Href="/second" Match="NavLinkMatch.Prefix">Second</MudNavLink>
-            </MudButton>
-        </MudButtonGroup>
-        <MudSpacer />
-
-        <MudIconButton Icon="@Icons.Material.Filled.Code" Href="https://404Industries.net" />
-    </MudAppBar>
+    <AppBar />
 
     <MudMainContent>
         @Body
