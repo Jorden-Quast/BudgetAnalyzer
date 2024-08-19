@@ -44,7 +44,7 @@
 
 <MudStack Row="true" AlignItems="AlignItems.Baseline">
     <MudButton Variant="Variant.Outlined" OnClick="SaveBudget" Disabled="(!IsChanged || !IsValid)" Color="IsValid ? Color.Info : Color.Error">Save Budget</MudButton>
-    <MudButton Variant="Variant.Outlined" OnClick="ResetBudget" Disabled="(!IsChanged)">Reset</MudButton>
+    <MudButton Variant="Variant.Outlined" OnClick="SetToDefault" Disabled="(!IsChanged)">Reset</MudButton>
     @if (!IsValid)
     {
         <MudText Color="Color.Error">@ErrorMessage</MudText>
@@ -54,6 +54,7 @@
 @code {
     [Parameter, EditorRequired]
     public Budget BudgetToEdit { get; set; } = default!;
+    private Budget? _BudgetToEdit { get; set; }
 
     private string BudgetName { get; set; } = default!;
     private List<BudgetCategory> BudgetCategories { get; set; } = default!;
@@ -63,10 +64,15 @@
     private bool IsValid => new Budget(BudgetName, BudgetCategories).IsValid(out ErrorMessage);
     private string? ErrorMessage;
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        base.OnInitialized();
-        BudgetToEdit = State.AvailableBudgets.First();
+        base.OnParametersSet();
+        if (_BudgetToEdit is null || BudgetToEdit != _BudgetToEdit) SetToDefault();
+    }
+
+    private void SetToDefault()
+    {
+        _BudgetToEdit = BudgetToEdit;
         BudgetName = BudgetToEdit.Name;
         BudgetCategories = BudgetToEdit.Categories.ToList(); 
     }
@@ -80,12 +86,4 @@
     }
 
     private void SaveBudget() => AddAction(new UpdateBudget(BudgetToEdit.Id, new(BudgetName, BudgetCategories)));
-
-    private void ResetBudget()
-    {
-        BudgetToEdit = State.AvailableBudgets.First();
-        BudgetName = BudgetToEdit.Name;
-        BudgetCategories = BudgetToEdit.Categories.ToList(); 
-    }
-
 }
