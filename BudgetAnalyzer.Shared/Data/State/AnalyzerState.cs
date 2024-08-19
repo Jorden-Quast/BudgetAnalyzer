@@ -1,10 +1,11 @@
 ﻿using BudgetAnalyzer.Shared.Data;
+using System.Collections.Immutable;
 
 namespace BudgetAnalyzer.Shared.State;
 public record AnalyzerState
 {
     public Budget? CurrentBudget { get; init; }
-    public IEnumerable<Budget> AvailableBudgets { get; init; } = new List<Budget>() { Budget.Default, Budget.Default, Budget.Default};
+    public ImmutableList<Budget> AvailableBudgets { get; init; } = ImmutableList.Create([Budget.Default, Budget.Default, Budget.Default]);
 
     public int CounterValue { get; init; }
 

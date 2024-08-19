@@ -3,10 +3,10 @@
 @namespace BudgetAnalyzer.Shared.Controls
 @inherits SubscribedComponent
 
-<MudTable T="BudgetCategory" Items="BudgetCategories" Hover="true" Elevation="0" IsEditRowSwitchingBlocked="true"
+<MudTable T="BudgetCategory" Items="EditedBudget.Categories" Hover="true" Elevation="0" IsEditRowSwitchingBlocked="true"
           EditTrigger="TableEditTrigger.RowClick" OnPreviewEditClick=StartEditing OnCommitEditClick="FinishEditing">
     <ToolBarContent>
-        <MudTextField Label="Budget Name" @bind-Value=BudgetName DebounceInterval="500" />
+        <MudTextField Label="Budget Name" @bind-Value:get=EditedBudget.Name @bind-Value:set=@((string newName) => EditedBudget = EditedBudget with {Name = newName}) Immediate="true" />
         <MudSpacer />
         <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddCategory">Add New Category</MudButton>
     </ToolBarContent>
@@ -42,7 +42,7 @@
     </RowEditingTemplate>
 </MudTable>
 
-<MudStack Row="true" AlignItems="AlignItems.Baseline">
+<MudStack Row="true" AlignItems="AlignItems.Baseline" Class="mt-4">
     <MudButton Variant="Variant.Outlined" OnClick="SaveBudget" Disabled="(!IsChanged || !IsValid)" Color="IsValid ? Color.Info : Color.Error">Save Budget</MudButton>
     <MudButton Variant="Variant.Outlined" OnClick="SetToDefault" Disabled="(!IsChanged)">Reset</MudButton>
     @if (!IsValid)
@@ -56,34 +56,34 @@
     public Budget BudgetToEdit { get; set; } = default!;
     private Budget? _BudgetToEdit { get; set; }
 
-    private string BudgetName { get; set; } = default!;
-    private List<BudgetCategory> BudgetCategories { get; set; } = default!;
+    private Budget EditedBudget { get; set; } = default!;
+
     private BudgetCategory TempCategory { get; set; } = default!;
 
-    private bool IsChanged => BudgetToEdit != new Budget(BudgetName, BudgetCategories);
-    private bool IsValid => new Budget(BudgetName, BudgetCategories).IsValid(out ErrorMessage);
+    private bool IsChanged => !BudgetToEdit.ValueEquals(EditedBudget);
+    private bool IsValid => EditedBudget.IsValid(out ErrorMessage);
     private string? ErrorMessage;
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        if (_BudgetToEdit is null || BudgetToEdit != _BudgetToEdit) SetToDefault();
+        if (_BudgetToEdit is null || BudgetToEdit.Id != _BudgetToEdit.Id) SetToDefault();
     }
 
     private void SetToDefault()
     {
         _BudgetToEdit = BudgetToEdit;
-        BudgetName = BudgetToEdit.Name;
-        BudgetCategories = BudgetToEdit.Categories.ToList(); 
+        EditedBudget = BudgetToEdit;
     }
 
-    private void AddCategory() => BudgetCategories.Add(BudgetCategory.Default);
-    private void RemoveCategory(BudgetCategory category) => BudgetCategories.Remove(category);
+    private void AddCategory() => EditedBudget = EditedBudget with {Categories = EditedBudget.Categories.Add(BudgetCategory.Default)};
+    private void RemoveCategory(BudgetCategory category) => EditedBudget = EditedBudget with {Categories = EditedBudget.Categories.Remove(category)};
+
     private void StartEditing(object editObject) => TempCategory = (BudgetCategory)editObject;
     private void FinishEditing(object editObject) {
-        int replacementIndex = BudgetCategories.FindIndex(c => c.Id == TempCategory.Id);
-        BudgetCategories[replacementIndex] = TempCategory;
+        BudgetCategory originalValue = EditedBudget.Categories.Single(c => c.Id == TempCategory.Id);
+        EditedBudget = EditedBudget with { Categories = EditedBudget.Categories.Replace(originalValue, TempCategory) };
     }
 
-    private void SaveBudget() => AddAction(new UpdateBudget(BudgetToEdit.Id, new(BudgetName, BudgetCategories)));
+    private void SaveBudget() => AddAction(new UpdateBudget(EditedBudget.Id, EditedBudget.Name ,EditedBudget.Categories));
 }

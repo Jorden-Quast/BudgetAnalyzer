@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+using System.Collections.Immutable;
 
 namespace BudgetAnalyzer.Shared.Data;
 
@@ -9,19 +10,10 @@ public record BudgetCategory(string Name, decimal Percentage, decimal? Cutoff)
     public static BudgetCategory Default => new("Default Cagetory", 0, null); 
 }
 
-public class Budget : IEquatable<Budget>
+public sealed record Budget(string Name, ImmutableList<BudgetCategory> Categories)
 {
-    public string Name { get; init; }
-    public IEnumerable<BudgetCategory> Categories { get; init; }
-
     public readonly Guid Id = Guid.NewGuid();
-
-    public static Budget Default => new("Default Budget", Enumerable.Empty<BudgetCategory>());
-    public Budget(string name, IEnumerable<BudgetCategory> categories)
-    {
-        Name = name;
-        Categories = categories;
-    }
+    public static Budget Default => new("Default Budget", []);
 
     public bool IsValid(out string? errorMessage)
     {
@@ -32,17 +24,19 @@ public class Budget : IEquatable<Budget>
         return string.IsNullOrWhiteSpace(errorMessage);
     }
 
+    // Equality Stuff
     public bool Equals(Budget? other)
     {
         if(other == null) return false;
-        if (Id == other.Id) return true;
+        return Id == other.Id;
+    }
 
+    public bool ValueEquals(Budget? other)
+    {
+        if (other == null) return false;
         return Name == other.Name
                && Categories.SequenceEqual(other.Categories);
-    }
-    public override bool Equals(object? obj) => Equals(obj as Budget);
-    public override int GetHashCode() => Id.GetHashCode();
+    } 
 
-    public static bool operator ==(Budget? left, Budget? right) => left?.Equals(right) ?? (left is null && right is null);
-    public static bool operator !=(Budget? left, Budget? right) => !(left == right);
+    public override int GetHashCode() => Id.GetHashCode();
 }

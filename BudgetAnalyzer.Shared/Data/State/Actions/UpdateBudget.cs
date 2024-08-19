@@ -1,18 +1,15 @@
 ﻿using BudgetAnalyzer.Shared.Data;
+using System.Collections.Immutable;
 
 namespace BudgetAnalyzer.Shared.State;
 
-public class UpdateBudget(Guid BudgetId, Budget NewBudget) : IAction
+public class UpdateBudget(Guid BudgetId, string Name, IEnumerable<BudgetCategory> Categories) : IAction
 {
     public AnalyzerState UpdateState(AnalyzerState state)
     {
-        List<Budget> currentBugets = state.AvailableBudgets.ToList();
-        int replacementIndex = currentBugets.FindIndex(b => b.Id == BudgetId);
-        if (replacementIndex == -1) { return state; }
+        Budget originalBudget = state.AvailableBudgets.Single(b => b.Id == BudgetId);
+        Budget newBudget =  originalBudget with { Name = Name, Categories = Categories.ToImmutableList() };
 
-        currentBugets.RemoveAt(replacementIndex);
-        currentBugets.Insert(replacementIndex, NewBudget);
-
-        return state with { AvailableBudgets = currentBugets };
+        return state with { AvailableBudgets = state.AvailableBudgets.Replace(originalBudget, newBudget) };
     }
 }
