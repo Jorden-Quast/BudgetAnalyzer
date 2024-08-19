@@ -1,0 +1,7 @@
+﻿@page "/"
+@namespace BudgetAnalyzer.Shared.Pages
+@inherits SubscribedComponent
+
+<MudContainer>
+    <BudgetEditor BudgetToEdit="State.AvailableBudgets.First()" />
+</MudContainer>
