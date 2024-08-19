@@ -2,7 +2,9 @@
 
 public record BudgetCategory(string Name, decimal Percentage, decimal? Cutoff) 
 {
-    public static readonly BudgetCategory Default = new("Default Cagetory", 0, null); 
+    public Guid Id { get; } = Guid.NewGuid();
+
+    public static BudgetCategory Default => new("Default Cagetory", 0, null); 
 }
 
 public class Budget : IEquatable<Budget>
