@@ -1,0 +1,51 @@
+﻿@page "/"
+@using BudgetAnalyzer.Shared.Data
+@inherits SubscribedComponent
+
+
+<MudPaper>
+    <MudForm @ref=FormRef IsValid=true>
+        <MudTextField Label="Budget Name" @bind-Value=BudgetName />
+
+        <MudTable T="BudgetCategory" Items="BudgetCategories" Hover="true" EditTrigger="TableEditTrigger.RowClick">
+            <ToolBarContent>
+                <MudText>Categories</MudText>
+                <MudSpacer />
+                <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddCategory">Add New Category</MudButton>
+            </ToolBarContent>
+
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Fractional Percentage</MudTh>
+                <MudTh>Cutoff</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Fractional Percentage">@context.Percentage</MudTd>
+                <MudTd DataLabel="Cutoff">@(context.Cutoff is null ? "N/A" : context.Cutoff.ToString())</MudTd>
+            </RowTemplate>
+
+            <RowEditingTemplate>
+            </RowEditingTemplate>
+        </MudTable>
+
+        <MudButton OnClick="CreateBudget" Disabled="IsValid">Create Budget</MudButton>
+    </MudForm>
+</MudPaper>
+
+@code{
+    private MudForm? FormRef { get; set; }
+    private bool IsValid { get; set; } = false;
+
+    private string BudgetName { get; set; } = "New Budget";
+    private List<BudgetCategory> BudgetCategories { get; } = new();
+
+    private void AddCategory() => BudgetCategories.Add(BudgetCategory.Default);
+
+    private void CreateBudget()
+    {
+        Budget newBudget = new(BudgetName, BudgetCategories);
+
+    }
+}
