@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
+using BudgetAnalyzer.Shared.State;
 
 namespace BudgetAnalyzer
 {
@@ -17,6 +18,9 @@ namespace BudgetAnalyzer
 
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddMudServices();
+
+            // State Management
+            builder.Services.AddSingleton<StateManager>();
 
             #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();
