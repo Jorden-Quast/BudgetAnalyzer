@@ -1,15 +1,12 @@
 ﻿@page "/"
-@inject StateManager StateManager
+@inherits SubscribedComponent
 
 <MudText Typo="Typo.h1">Counter</MudText>
 
-<MudText Typo="Typo.body1">Current count: @StateManager.State.CounterValue</MudText>
+<MudText Typo="Typo.body1">Current count: @State.CounterValue</MudText>
 
 <MudButton Variant="Variant.Filled" OnClick="IncrementCount">I'm So Confused</MudButton>
 
 @code {
-    private void IncrementCount()
-    {
-        StateManager.AddAction(new IncrementCounterAction(1));
-    }
+    private void IncrementCount() => AddAction(new IncrementCounterAction(1));
 }

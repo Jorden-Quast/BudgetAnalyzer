@@ -1,6 +1,5 @@
 ﻿@namespace BudgetAnalyzer.Shared.Layout
 @inherits LayoutComponentBase
-@inject StateManager StateManager
 
 <MudThemeProvider />
 <MudPopoverProvider />
@@ -8,35 +7,9 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar>
-        <MudMenu Icon="@Icons.Material.Filled.Menu" AnchorOrigin="Origin.CenterCenter">
-            <MudMenuItem OnClick="() => IncrementCount(5)">Add 5</MudMenuItem>
-            <MudMenuItem OnClick="() => IncrementCount(10)">Add 10</MudMenuItem>
-            <MudMenuItem OnClick="() => IncrementCount(15)">Add 15</MudMenuItem>
-        </MudMenu>
-        <MudSpacer />
-
-        <MudButtonGroup Color="Color.Tertiary" Variant="Variant.Text">
-            <MudButton>
-                <MudNavLink Href="/" Match="NavLinkMatch.All">Counter</MudNavLink>
-            </MudButton>
-            <MudButton>
-                <MudNavLink Href="/second" Match="NavLinkMatch.Prefix">Second</MudNavLink>
-            </MudButton>
-        </MudButtonGroup>
-        <MudSpacer />
-
-        <MudIconButton Icon="@Icons.Material.Filled.Code" Href="https://github.com/Jorden-Quast/BudgetAnalyzer" />
-    </MudAppBar>
+    <AppBar />
 
     <MudMainContent>
         @Body
     </MudMainContent>
 </MudLayout>
-
-@code{
-    public void IncrementCount(int amount)
-    {
-        StateManager.AddAction(new IncrementCounterAction(amount));
-    }
-}
