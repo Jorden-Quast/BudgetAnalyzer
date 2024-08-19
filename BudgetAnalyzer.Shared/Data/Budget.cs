@@ -23,6 +23,15 @@ public class Budget : IEquatable<Budget>
         Categories = categories;
     }
 
+    public bool IsValid(out string? errorMessage)
+    {
+        errorMessage = null;
+        if (Categories.Sum(c => c.Percentage) > 1)
+            errorMessage = "Percentages should sum to at most 1";
+
+        return string.IsNullOrWhiteSpace(errorMessage);
+    }
+
     public bool Equals(Budget? other)
     {
         if(other == null) return false;
