@@ -24,5 +24,14 @@ public record AnalyzerState
     public byte[] ToJsonByteArray(bool prettyOutput = true) => Encoding.Default.GetBytes(ToJson(prettyOutput));
 
     public static AnalyzerState FromJson(string jsonString) => FromJsonOrDefault(jsonString) ?? throw new ArgumentNullException($"{nameof(jsonString)} could not be parsed");
-    public static AnalyzerState? FromJsonOrDefault(string jsonString) => JsonSerializer.Deserialize<AnalyzerState>(jsonString);
+    public static AnalyzerState? FromJsonOrDefault(string jsonString) {
+        try
+        {
+            return JsonSerializer.Deserialize<AnalyzerState>(jsonString);
+        } 
+        catch (JsonException) 
+        {
+            return null;
+        }
+    }
 }

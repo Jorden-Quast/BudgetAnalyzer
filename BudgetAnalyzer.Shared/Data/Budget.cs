@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Razor.TagHelpers;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 
 namespace BudgetAnalyzer.Shared.Data;
 
-public record BudgetCategory(string Name, decimal Percentage, decimal? Cutoff) 
+public record BudgetCategory(string Name, Percentage Percentage, decimal? Cutoff) 
 {
     public Guid Id { get; init; } = Guid.NewGuid();
 
-    public static BudgetCategory Default => new("Default Cagetory", 0, null); 
+    public static BudgetCategory Default => new("Default Cagetory", new(0), null); 
 }
 
 public sealed record Budget(string Name, ImmutableList<BudgetCategory> Categories)
@@ -18,8 +17,8 @@ public sealed record Budget(string Name, ImmutableList<BudgetCategory> Categorie
     public bool IsValid(out string? errorMessage)
     {
         errorMessage = null;
-        if (Categories.Sum(c => c.Percentage) > 1)
-            errorMessage = "Percentages should sum to at most 1";
+        if (Categories.Sum(c => c.Percentage.Value) > 100)
+            errorMessage = "Percentages should sum to no more that 100%";
 
         return string.IsNullOrWhiteSpace(errorMessage);
     }

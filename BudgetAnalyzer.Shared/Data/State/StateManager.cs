@@ -23,9 +23,15 @@ public class StateManager
             File.WriteAllText(DocPath, defaultState.ToJson(false));
             return defaultState;
         }
-
         string serializedState = File.ReadAllText(DocPath);
-        return AnalyzerState.FromJson(serializedState);
+        if (AnalyzerState.FromJsonOrDefault(serializedState) is not AnalyzerState deserializedState)
+        {
+            AnalyzerState defaultState = new();
+            File.WriteAllText(DocPath, defaultState.ToJson(false));
+            return defaultState;
+        }
+
+        return deserializedState;
     }
 
     private void SaveState()
