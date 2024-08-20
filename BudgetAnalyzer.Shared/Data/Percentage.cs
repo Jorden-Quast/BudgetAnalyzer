@@ -1,7 +1,8 @@
 ﻿namespace BudgetAnalyzer.Shared.Data;
 
 /// <summary>
-/// Attempts to make working with percentages similar to how it would be done if writing on math on paper
+/// Attempts to make working with percentages similar to how it would be done if writing on math on paper.
+/// Percentages are whole numbers (50% = 50) until you do math with them
 /// </summary>
 public readonly struct Percentage
 {
