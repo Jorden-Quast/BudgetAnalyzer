@@ -2,13 +2,16 @@
 using System.Collections.Immutable;
 
 namespace BudgetAnalyzer.Shared.State;
+
 public record AnalyzerState
 {
-    public Budget? CurrentBudget { get; init; }
-    public ImmutableList<Budget> AvailableBudgets { get; init; } = ImmutableList.Create([Budget.Default, Budget.Default, Budget.Default]);
+    public AppSettings Settings { get; init; }
+    public ImmutableList<Budget> AvailableBudgets { get; init; }
+    public Budget? SelectedBudget => AvailableBudgets.FirstOrDefault(b => b.Id == Settings.CurrentBudgetId);
 
-    public int CounterValue { get; init; }
-
-    public AnalyzerState() => CounterValue = 0;
-
+    public AnalyzerState()
+    {
+        AvailableBudgets = ImmutableList.Create([Budget.Default]);
+        Settings = new AppSettings(AvailableBudgets.First().Id);
+    }
 }

@@ -3,8 +3,10 @@ using System.Collections.Immutable;
 
 namespace BudgetAnalyzer.Shared.State;
 
-public class UpdateBudget(Guid BudgetId, string Name, IEnumerable<BudgetCategory> Categories) : IAction
+public record UpdateBudget(Guid BudgetId, string Name, IEnumerable<BudgetCategory> Categories) : IAction
 {
+    public UpdateBudget(Budget updatedBudget) : this(updatedBudget.Id, updatedBudget.Name, updatedBudget.Categories) { }
+
     public AnalyzerState UpdateState(AnalyzerState state)
     {
         Budget originalBudget = state.AvailableBudgets.Single(b => b.Id == BudgetId);

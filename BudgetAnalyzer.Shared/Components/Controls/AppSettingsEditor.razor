@@ -1,0 +1,22 @@
+﻿@using BudgetAnalyzer.Shared.Data;
+@namespace BudgetAnalyzer.Shared.Controls
+@inherits SubscribedComponent
+
+<MudStack Row="true" AlignItems="AlignItems.Baseline">
+    <MudText>Selected Budget: </MudText>
+
+    <MudSelect @bind-Value:get=Settings.CurrentBudgetId @bind-Value:set=SetSelectedBudget>
+        <MudSelectItem Disabled="true" Value="default(Guid)">None</MudSelectItem>
+        @foreach(Budget budget in State.AvailableBudgets)
+        {
+            <MudSelectItem Value="budget.Id">@budget.Name</MudSelectItem>        
+        }
+    </MudSelect>
+</MudStack>
+
+
+@code {
+    private AppSettings Settings => State.Settings;
+
+    private void SetSelectedBudget(Guid selectedBudget) => AddAction(new SetSelectedBudgetAction(selectedBudget));
+}

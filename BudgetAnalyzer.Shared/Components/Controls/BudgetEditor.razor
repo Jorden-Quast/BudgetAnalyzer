@@ -5,6 +5,7 @@
 
 <MudTable T="BudgetCategory" Items="EditedBudget.Categories" Hover="true" Elevation="0" IsEditRowSwitchingBlocked="true"
           EditTrigger="TableEditTrigger.RowClick" OnPreviewEditClick=StartEditing OnCommitEditClick="FinishEditing">
+
     <ToolBarContent>
         <MudTextField Label="Budget Name" @bind-Value:get=EditedBudget.Name @bind-Value:set=@((string newName) => EditedBudget = EditedBudget with {Name = newName}) Immediate="true" />
         <MudSpacer />
@@ -43,12 +44,14 @@
 </MudTable>
 
 <MudStack Row="true" AlignItems="AlignItems.Baseline" Class="mt-4">
-    <MudButton Variant="Variant.Outlined" OnClick="SaveBudget" Disabled="(!IsChanged || !IsValid)" Color="IsValid ? Color.Info : Color.Error">Save Budget</MudButton>
-    <MudButton Variant="Variant.Outlined" OnClick="SetToDefault" Disabled="(!IsChanged)">Reset</MudButton>
+    <MudButton Variant="Variant.Filled" OnClick="SaveBudget" Disabled="(!IsChanged || !IsValid)" Color="IsValid ? Color.Info : Color.Error">Save Budget</MudButton>
+    <MudButton Variant="Variant.Filled" OnClick="SetToDefault" Disabled="(!IsChanged)">Reset</MudButton>
     @if (!IsValid)
     {
         <MudText Color="Color.Error">@ErrorMessage</MudText>
     }
+    <MudSpacer />
+    <MudButton Variant="Variant.Outlined" OnClick="DeleteBudget" Color="Color.Error">Delete Budget</MudButton>
 </MudStack>
 
 @code {
@@ -85,5 +88,6 @@
         EditedBudget = EditedBudget with { Categories = EditedBudget.Categories.Replace(originalValue, TempCategory) };
     }
 
-    private void SaveBudget() => AddAction(new UpdateBudget(EditedBudget.Id, EditedBudget.Name ,EditedBudget.Categories));
+    private void SaveBudget() => AddAction(new UpdateBudget(EditedBudget));
+    private void DeleteBudget() => AddAction(new DeleteBudgetAction(EditedBudget.Id));
 }
