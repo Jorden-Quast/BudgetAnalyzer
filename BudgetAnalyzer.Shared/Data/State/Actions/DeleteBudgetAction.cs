@@ -1,4 +1,6 @@
-﻿namespace BudgetAnalyzer.Shared.State;
+﻿using BudgetAnalyzer.Shared.Data;
+
+namespace BudgetAnalyzer.Shared.State;
 
 public class DeleteBudgetAction(Guid BudgetIdToDelete) : IAction
 {
@@ -9,7 +11,8 @@ public class DeleteBudgetAction(Guid BudgetIdToDelete) : IAction
         if(BudgetIdToDelete == state.Settings.CurrentBudgetId)
         {
             Guid newSelection = state.AvailableBudgets.Select(b => b.Id).FirstOrDefault();
-            state = (new SetSelectedBudgetAction(newSelection)).UpdateState(state);
+            AppSettings updatedSettings = state.Settings with { CurrentBudgetId = newSelection };
+            state = (new UpdateSettingsAction(updatedSettings)).UpdateState(state);
         }
 
         return state;
