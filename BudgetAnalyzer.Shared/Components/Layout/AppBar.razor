@@ -2,7 +2,15 @@
 @inherits SubscribedComponent
 
 <MudAppBar>
-    <MudIcon Icon="@Icons.Material.Filled.Menu" />
+    <MudMenu Icon="@Icons.Material.Filled.Menu">
+        <MudMenuItem>
+            <MudFileUpload T="IBrowserFile" Accept=".json" FilesChanged="FileUpload">
+                <ActivatorContent>
+                    <MudButton StartIcon="@Icons.Material.Filled.FileUpload">Upload App Data</MudButton>
+                </ActivatorContent>
+            </MudFileUpload>
+        </MudMenuItem>
+    </MudMenu>
     <MudSpacer />
 
     <MudButtonGroup Color="Color.Tertiary" Variant="Variant.Text">
@@ -18,3 +26,15 @@
     <MudIconButton Icon="@Icons.Material.Filled.Code" Href="https://github.com/Jorden-Quast/BudgetAnalyzer" />
 </MudAppBar>
 
+@code{
+    public async Task FileUpload(IBrowserFile newFile)
+    {
+        Stream fileStream = newFile.OpenReadStream();
+        StreamReader reader = new(fileStream);
+        string fileText = await reader.ReadToEndAsync();
+
+        AddAction(new SetAppFromJsonAction(fileText));
+
+
+    }
+}
