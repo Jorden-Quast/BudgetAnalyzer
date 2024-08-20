@@ -2,10 +2,10 @@
 @namespace BudgetAnalyzer.Shared.Controls
 @inherits SubscribedComponent
 
-<MudStack Row="true" AlignItems="AlignItems.Baseline">
+<MudStack Row="true" AlignItems="AlignItems.Baseline" Class="mb-4">
     <MudText>Selected Budget: </MudText>
 
-    <MudSelect @bind-Value:get=Settings.CurrentBudgetId @bind-Value:set=SetSelectedBudget>
+    <MudSelect @bind-Value:get=EditedSettings.CurrentBudgetId @bind-Value:set=@((Guid selectedId) => EditedSettings = EditedSettings with {CurrentBudgetId = selectedId} )>
         <MudSelectItem Disabled="true" Value="default(Guid)">None</MudSelectItem>
         @foreach(Budget budget in State.AvailableBudgets)
         {
@@ -14,7 +14,10 @@
     </MudSelect>
 </MudStack>
 
-<MudStack Spacing="0" Class="mt-4">
+<MudButton Variant="Variant.Filled" OnClick="SaveSettings" Disabled="(!IsChanged)" Color="Color.Info">Save Settings</MudButton>
+<MudButton Variant="Variant.Filled" OnClick="SetToDefault" Disabled="(!IsChanged)">Reset</MudButton>
+
+<MudStack Spacing="0">
     <MudButton Variant="Variant.Text" OnClick="() => ShowState = !ShowState">Show Current App Data</MudButton>
     <MudDivider />
     <MudCollapse Expanded="ShowState">
@@ -26,8 +29,20 @@
 
 
 @code {
-    private AppSettings Settings => State.Settings;
-    private bool ShowState { get; set; } = false;
+    private AppSettings CurrentSettings => State.Settings;
+    private AppSettings EditedSettings { get; set; } = default!;
 
-    private void SetSelectedBudget(Guid selectedBudget) => AddAction(new SetSelectedBudgetAction(selectedBudget));
+    private bool ShowState { get; set; } = false;
+    private bool IsChanged => !(CurrentSettings == EditedSettings);
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        EditedSettings = CurrentSettings;
+    }
+
+    private void SetToDefault() => EditedSettings = CurrentSettings;
+
+    private void SaveSettings() => AddAction(new UpdateSettingsAction(EditedSettings));
+
 }
