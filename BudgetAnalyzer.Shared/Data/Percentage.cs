@@ -13,8 +13,8 @@ public readonly struct Percentage
     public static implicit operator Percentage(decimal value) => new(value);
     public static implicit operator decimal(Percentage value) => value.FractionalValue * 100;
 
-    /// <summary> Converts the percentage to a string, leaving off the '%' character. 10% => "10" </summary>
-    public override string ToString() => (FractionalValue * 100).ToString();
+    /// <summary> Converts the percentage to a round-trip string, leaving off the '%' character.</summary>
+    public override string ToString() => (FractionalValue * 100).ToString("R");
 
     /// <summary> Converts the percentage to a string following a specified format, leaving off the '%' character</summary>
     public string ToString(string format) => (FractionalValue * 100).ToString(format);
