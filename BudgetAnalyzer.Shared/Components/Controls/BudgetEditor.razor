@@ -14,14 +14,14 @@
 
     <HeaderContent>
         <MudTh>Name</MudTh>
-        <MudTh>Fractional Percentage</MudTh>
+        <MudTh>% of Income</MudTh>
         <MudTh>Cutoff</MudTh>
         <MudTh>&nbsp;</MudTh>
     </HeaderContent>
 
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Fractional Percentage">@context.Percentage</MudTd>
+        <MudTd DataLabel="% of Income">@context.Percentage.ToString("F1")</MudTd>
         <MudTd DataLabel="Cutoff">@(context.Cutoff is null ? "N/A" : context.Cutoff.ToString())</MudTd>
         <MudTd> <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => RemoveCategory(context)" /> </MudTd>
     </RowTemplate>
@@ -31,8 +31,8 @@
             <MudTextField @bind-Value:get=TempCategory.Name @bind-Value:set=@((string newName) => TempCategory = TempCategory with {Name = newName}) DebounceInterval="500"/>
         </MudTd>
 
-        <MudTd DataLabel="Fractional Percentage">
-            <MudNumericField T="decimal" Min="0" Max="1" Step="0.1M" DebounceInterval="500"
+        <MudTd DataLabel="% of Income">
+            <MudNumericField T="decimal" Min="0" Max="100" Step="10M" DebounceInterval="500"
                              @bind-Value:get=TempCategory.Percentage @bind-Value:set=@((decimal newVal) => TempCategory = TempCategory with {Percentage = newVal}) />
         </MudTd>
 
