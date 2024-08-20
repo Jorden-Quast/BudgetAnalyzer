@@ -3,13 +3,17 @@
 @inherits SubscribedComponent
 
 <MudAppBar>
-    <MudMenu Icon="@Icons.Material.Filled.Menu">
+    <MudMenu Icon="@Icons.Material.Filled.Menu" AnchorOrigin="Origin.CenterCenter">
         <MudMenuItem Icon="@Icons.Material.Filled.FileUpload" OnClick="FileUpload">
             Upload App Data
         </MudMenuItem>
 
         <MudMenuItem Icon="@Icons.Material.Filled.FileDownload" OnClick="FileDownload">
             Download App Data
+        </MudMenuItem>
+
+        <MudMenuItem Icon="@Icons.Material.Filled.ContentCopy" OnClick="CopyAppData">
+            Copy App Data to Clipboard
         </MudMenuItem>
     </MudMenu>
     <MudSpacer />
@@ -47,5 +51,7 @@
         AddAction(new SetAppFromJsonAction(fileText));
     }
 
-    public async Task FileDownload() => await FileSaver.SaveAsync("AppData.json", new MemoryStream(State.ToJsonByteArray(true)));
+    public async Task FileDownload() => await FileSaver.SaveAsync("AppData.json", new MemoryStream(State.ToJsonByteArray()));
+
+    public async Task CopyAppData() => await Clipboard.SetTextAsync(State.ToJson());
 }

@@ -20,7 +20,7 @@ public class StateManager
         if (!File.Exists(DocPath))
         {
             AnalyzerState defaultState = new();
-            File.WriteAllText(DocPath, defaultState.ToJson(true));
+            File.WriteAllText(DocPath, defaultState.ToJson(false));
             return defaultState;
         }
 
@@ -30,7 +30,7 @@ public class StateManager
 
     private void SaveState()
     {
-        string serializedState = _State.ToJson(true);
+        string serializedState = _State.ToJson(false);
         File.WriteAllText(DocPath, serializedState);
     }
 
