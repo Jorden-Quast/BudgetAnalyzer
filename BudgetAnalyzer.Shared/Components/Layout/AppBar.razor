@@ -1,0 +1,20 @@
+@namespace BudgetAnalyzer.Shared.Layout
+@inherits SubscribedComponent
+
+<MudAppBar>
+    <MudIcon Icon="@Icons.Material.Filled.Menu" />
+    <MudSpacer />
+
+    <MudButtonGroup Color="Color.Tertiary" Variant="Variant.Text">
+        <MudButton>
+            <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
+        </MudButton>
+        <MudButton>
+            <MudNavLink Href="/settings" Match="NavLinkMatch.Prefix">Settings</MudNavLink>
+        </MudButton>
+    </MudButtonGroup>
+    <MudSpacer />
+
+    <MudIconButton Icon="@Icons.Material.Filled.Code" Href="https://github.com/Jorden-Quast/BudgetAnalyzer" />
+</MudAppBar>
+

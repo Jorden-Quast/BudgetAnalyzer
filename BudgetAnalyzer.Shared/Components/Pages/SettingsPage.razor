@@ -1,0 +1,45 @@
+﻿@page "/settings"
+@using BudgetAnalyzer.Shared.Data
+@namespace BudgetAnalyzer.Shared.Pages
+@inherits SubscribedComponent
+
+<MudContainer>
+    <MudStack Row="true" AlignItems="AlignItems.Stretch" Justify="Justify.FlexStart" StretchItems="StretchItems.All">
+        <MudPaper Elevation="2" MaxWidth="25%">  
+            <MudList T="Guid" @bind-SelectedValue=SelectedId>
+                <MudListItem Value="OptionsGuid" Icon="@Icons.Material.Filled.Settings">App Options</MudListItem>
+                <MudDivider />
+                <MudListSubheader Class="d-flex align-baseline">
+                    <MudText>Budgets</MudText>
+                    <MudSpacer />
+                    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="AddNewBudget" Size="Size.Small"/>
+                </MudListSubheader>
+                @foreach(Budget budget in State.AvailableBudgets)
+                {
+                    <MudListItem Value="budget.Id">@budget.Name</MudListItem>
+                }
+            </MudList>
+        </MudPaper>
+
+        <MudPaper Elevation="2" Class="pa-4"> 
+            @{
+                if(SelectedId == OptionsGuid)
+                {
+                    <AppSettingsEditor />
+                }
+                else if(State.AvailableBudgets.SingleOrDefault(b => b.Id == SelectedId) is Budget selectedBudget)
+                {
+                    <BudgetEditor BudgetToEdit="selectedBudget" />
+                }
+            }
+        </MudPaper>
+    </MudStack>
+</MudContainer>
+
+@code {
+    private static readonly Guid OptionsGuid = Guid.NewGuid();
+    private Guid SelectedId { get; set; } = OptionsGuid;
+
+    private void AddNewBudget() => AddAction(new AddBudgetAction());
+
+}

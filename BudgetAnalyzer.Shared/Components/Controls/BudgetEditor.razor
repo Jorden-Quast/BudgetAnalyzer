@@ -1,0 +1,93 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using BudgetAnalyzer.Shared.Data
+@namespace BudgetAnalyzer.Shared.Controls
+@inherits SubscribedComponent
+
+<MudTable T="BudgetCategory" Items="EditedBudget.Categories" Hover="true" Elevation="0" IsEditRowSwitchingBlocked="true"
+          EditTrigger="TableEditTrigger.RowClick" OnPreviewEditClick=StartEditing OnCommitEditClick="FinishEditing">
+
+    <ToolBarContent>
+        <MudTextField Label="Budget Name" @bind-Value:get=EditedBudget.Name @bind-Value:set=@((string newName) => EditedBudget = EditedBudget with {Name = newName}) Immediate="true" />
+        <MudSpacer />
+        <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddCategory">Add New Category</MudButton>
+    </ToolBarContent>
+
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Fractional Percentage</MudTh>
+        <MudTh>Cutoff</MudTh>
+        <MudTh>&nbsp;</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Fractional Percentage">@context.Percentage</MudTd>
+        <MudTd DataLabel="Cutoff">@(context.Cutoff is null ? "N/A" : context.Cutoff.ToString())</MudTd>
+        <MudTd> <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => RemoveCategory(context)" /> </MudTd>
+    </RowTemplate>
+
+    <RowEditingTemplate>
+        <MudTd DataLabel="Name">
+            <MudTextField @bind-Value:get=TempCategory.Name @bind-Value:set=@((string newName) => TempCategory = TempCategory with {Name = newName}) DebounceInterval="500"/>
+        </MudTd>
+
+        <MudTd DataLabel="Fractional Percentage">
+            <MudNumericField T="decimal" Min="0" Max="1" Step="0.1M" DebounceInterval="500"
+                             @bind-Value:get=TempCategory.Percentage @bind-Value:set=@((decimal newVal) => TempCategory = TempCategory with {Percentage = newVal}) />
+        </MudTd>
+
+        <MudTd DataLabel="Cutoff">
+            <MudNumericField T="decimal?" Min="0" Step="50M" DebounceInterval="500"
+                             @bind-Value:get=TempCategory.Cutoff @bind-Value:set=@((decimal? newVal) => TempCategory = TempCategory with {Cutoff = newVal}) />
+        </MudTd>
+    </RowEditingTemplate>
+</MudTable>
+
+<MudStack Row="true" AlignItems="AlignItems.Baseline" Class="mt-4">
+    <MudButton Variant="Variant.Filled" OnClick="SaveBudget" Disabled="(!IsChanged || !IsValid)" Color="IsValid ? Color.Info : Color.Error">Save Budget</MudButton>
+    <MudButton Variant="Variant.Filled" OnClick="SetToDefault" Disabled="(!IsChanged)">Reset</MudButton>
+    @if (!IsValid)
+    {
+        <MudText Color="Color.Error">@ErrorMessage</MudText>
+    }
+    <MudSpacer />
+    <MudButton Variant="Variant.Outlined" OnClick="DeleteBudget" Color="Color.Error">Delete Budget</MudButton>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public Budget BudgetToEdit { get; set; } = default!;
+    private Budget? _BudgetToEdit { get; set; }
+
+    private Budget EditedBudget { get; set; } = default!;
+
+    private BudgetCategory TempCategory { get; set; } = default!;
+
+    private bool IsChanged => !BudgetToEdit.ValueEquals(EditedBudget);
+    private bool IsValid => EditedBudget.IsValid(out ErrorMessage);
+    private string? ErrorMessage;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (_BudgetToEdit is null || BudgetToEdit.Id != _BudgetToEdit.Id) SetToDefault();
+    }
+
+    private void SetToDefault()
+    {
+        _BudgetToEdit = BudgetToEdit;
+        EditedBudget = BudgetToEdit;
+    }
+
+    private void AddCategory() => EditedBudget = EditedBudget with {Categories = EditedBudget.Categories.Add(BudgetCategory.Default)};
+    private void RemoveCategory(BudgetCategory category) => EditedBudget = EditedBudget with {Categories = EditedBudget.Categories.Remove(category)};
+
+    private void StartEditing(object editObject) => TempCategory = (BudgetCategory)editObject;
+    private void FinishEditing(object editObject) {
+        BudgetCategory originalValue = EditedBudget.Categories.Single(c => c.Id == TempCategory.Id);
+        EditedBudget = EditedBudget with { Categories = EditedBudget.Categories.Replace(originalValue, TempCategory) };
+    }
+
+    private void SaveBudget() => AddAction(new UpdateBudget(EditedBudget));
+    private void DeleteBudget() => AddAction(new DeleteBudgetAction(EditedBudget.Id));
+}
