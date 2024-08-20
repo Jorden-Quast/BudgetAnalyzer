@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace BudgetAnalyzer.Shared.State;
+﻿namespace BudgetAnalyzer.Shared.State;
 
 public class StateManager
 {

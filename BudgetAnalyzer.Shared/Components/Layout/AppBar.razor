@@ -1,14 +1,15 @@
+@using CommunityToolkit.Maui.Storage;
 @namespace BudgetAnalyzer.Shared.Layout
 @inherits SubscribedComponent
 
 <MudAppBar>
     <MudMenu Icon="@Icons.Material.Filled.Menu">
-        <MudMenuItem>
-            <MudFileUpload T="IBrowserFile" Accept=".json" FilesChanged="FileUpload">
-                <ActivatorContent>
-                    <MudButton StartIcon="@Icons.Material.Filled.FileUpload">Upload App Data</MudButton>
-                </ActivatorContent>
-            </MudFileUpload>
+        <MudMenuItem Icon="@Icons.Material.Filled.FileUpload" OnClick="FileUpload">
+            Upload App Data
+        </MudMenuItem>
+
+        <MudMenuItem Icon="@Icons.Material.Filled.FileDownload" OnClick="FileDownload">
+            Download App Data
         </MudMenuItem>
     </MudMenu>
     <MudSpacer />
@@ -27,14 +28,24 @@
 </MudAppBar>
 
 @code{
-    public async Task FileUpload(IBrowserFile newFile)
+    public async Task FileUpload()
     {
-        Stream fileStream = newFile.OpenReadStream();
+        FilePickerFileType allowedFileTypes = new(
+                new Dictionary<DevicePlatform, IEnumerable<string>>
+                {
+                    { DevicePlatform.WinUI, new[] { ".json" } }
+                });
+
+        PickOptions options = new() { FileTypes = allowedFileTypes };
+        FileResult? fileResult = await FilePicker.PickAsync(options);
+        if (fileResult is null) return;
+
+        Stream fileStream = await fileResult.OpenReadAsync();
         StreamReader reader = new(fileStream);
+
         string fileText = await reader.ReadToEndAsync();
-
         AddAction(new SetAppFromJsonAction(fileText));
-
-
     }
+
+    public async Task FileDownload() => await FileSaver.SaveAsync("AppData.json", new MemoryStream(State.ToJsonByteArray(true)));
 }

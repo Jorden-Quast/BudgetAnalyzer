@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
 using BudgetAnalyzer.Shared.State;
+using CommunityToolkit.Maui;
 
 namespace BudgetAnalyzer
 {
@@ -11,6 +12,7 @@ namespace BudgetAnalyzer
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -19,7 +21,7 @@ namespace BudgetAnalyzer
             builder.Services.AddMauiBlazorWebView();
             builder.Services.AddMudServices();
 
-            // State Management
+            // App Services
             builder.Services.AddSingleton<StateManager>();
 
             #if DEBUG
