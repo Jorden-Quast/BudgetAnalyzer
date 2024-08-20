@@ -14,9 +14,20 @@
     </MudSelect>
 </MudStack>
 
+<MudStack Spacing="0" Class="mt-4">
+    <MudButton Variant="Variant.Text" OnClick="() => ShowState = !ShowState">Show Current App Data</MudButton>
+    <MudDivider />
+    <MudCollapse Expanded="ShowState">
+        <pre>
+            @State.ToJson()
+        </pre>
+    </MudCollapse>
+</MudStack>
+
 
 @code {
     private AppSettings Settings => State.Settings;
+    private bool ShowState { get; set; } = false;
 
     private void SetSelectedBudget(Guid selectedBudget) => AddAction(new SetSelectedBudgetAction(selectedBudget));
 }

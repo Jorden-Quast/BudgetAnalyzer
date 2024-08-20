@@ -1,8 +1,21 @@
+@using BudgetAnalyzer.Shared.Data;
 @namespace BudgetAnalyzer.Shared.Layout
 @inherits SubscribedComponent
 
 <MudAppBar>
-    <MudIcon Icon="@Icons.Material.Filled.Menu" />
+    <MudMenu Icon="@Icons.Material.Filled.Menu" AnchorOrigin="Origin.CenterCenter">
+        <MudMenuItem Icon="@Icons.Material.Filled.FileUpload" OnClick="FileUpload">
+            Upload App Data
+        </MudMenuItem>
+
+        <MudMenuItem Icon="@Icons.Material.Filled.FileDownload" OnClick="FileDownload">
+            Download App Data
+        </MudMenuItem>
+
+        <MudMenuItem Icon="@Icons.Material.Filled.ContentCopy" OnClick="CopyAppData">
+            Copy App Data to Clipboard
+        </MudMenuItem>
+    </MudMenu>
     <MudSpacer />
 
     <MudButtonGroup Color="Color.Tertiary" Variant="Variant.Text">
@@ -18,3 +31,16 @@
     <MudIconButton Icon="@Icons.Material.Filled.Code" Href="https://github.com/Jorden-Quast/BudgetAnalyzer" />
 </MudAppBar>
 
+@code{
+    public async Task FileUpload()
+    {
+        string? fileText = await AppDataTransporter.UploadJsonFile();
+
+        if (fileText is null) return;
+        AddAction(new SetAppFromJsonAction(fileText));
+    }
+
+    public async Task FileDownload() => await AppDataTransporter.DownloadJsonFile(State);
+    public async Task CopyAppData() => await AppDataTransporter.CopyJson(State);
+
+}

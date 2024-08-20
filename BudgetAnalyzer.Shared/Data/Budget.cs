@@ -5,14 +5,14 @@ namespace BudgetAnalyzer.Shared.Data;
 
 public record BudgetCategory(string Name, decimal Percentage, decimal? Cutoff) 
 {
-    public readonly Guid Id = Guid.NewGuid();
+    public Guid Id { get; init; } = Guid.NewGuid();
 
     public static BudgetCategory Default => new("Default Cagetory", 0, null); 
 }
 
 public sealed record Budget(string Name, ImmutableList<BudgetCategory> Categories)
 {
-    public readonly Guid Id = Guid.NewGuid();
+    public Guid Id { get; init; } = Guid.NewGuid();
     public static Budget Default => new("Default Budget", []);
 
     public bool IsValid(out string? errorMessage)
