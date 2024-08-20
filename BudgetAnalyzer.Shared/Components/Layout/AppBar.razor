@@ -1,4 +1,4 @@
-@using CommunityToolkit.Maui.Storage;
+@using BudgetAnalyzer.Shared.Data;
 @namespace BudgetAnalyzer.Shared.Layout
 @inherits SubscribedComponent
 
@@ -34,24 +34,13 @@
 @code{
     public async Task FileUpload()
     {
-        FilePickerFileType allowedFileTypes = new(
-                new Dictionary<DevicePlatform, IEnumerable<string>>
-                {
-                    { DevicePlatform.WinUI, new[] { ".json" } }
-                });
+        string? fileText = await AppDataTransporter.UploadJsonFile();
 
-        PickOptions options = new() { FileTypes = allowedFileTypes };
-        FileResult? fileResult = await FilePicker.PickAsync(options);
-        if (fileResult is null) return;
-
-        Stream fileStream = await fileResult.OpenReadAsync();
-        StreamReader reader = new(fileStream);
-
-        string fileText = await reader.ReadToEndAsync();
+        if (fileText is null) return;
         AddAction(new SetAppFromJsonAction(fileText));
     }
 
-    public async Task FileDownload() => await FileSaver.SaveAsync("AppData.json", new MemoryStream(State.ToJsonByteArray()));
+    public async Task FileDownload() => await AppDataTransporter.DownloadJsonFile(State);
+    public async Task CopyAppData() => await AppDataTransporter.CopyJson(State);
 
-    public async Task CopyAppData() => await Clipboard.SetTextAsync(State.ToJson());
 }
