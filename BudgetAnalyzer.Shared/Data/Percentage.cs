@@ -5,15 +5,16 @@
 /// </summary>
 public readonly struct Percentage
 {
-    public decimal FractionalValue { get; init; }
-    public decimal Value => FractionalValue * 100;
+    private decimal FractionalValue { get; init; }
 
     /// <summary> Creates a new percentage instance. Value should be the numerical percentage ie 10% = "10" </summary>
     public Percentage(decimal percentValue) => FractionalValue = (percentValue / 100);
+    public static implicit operator Percentage(decimal value) => new(value);
+    public static implicit operator decimal(Percentage value) => value.FractionalValue * 100;
+
     /// <summary> Converts the percentage to a string, leaving off the '%' character. 10% => "10" </summary>
     public override string ToString() => (FractionalValue * 100).ToString();
     public decimal PercentOf(decimal value) => FractionalValue * value;
-
 
     // Percentage-Number operations
     public static decimal operator +(Percentage left, decimal right) => (1 + left.FractionalValue) * right;

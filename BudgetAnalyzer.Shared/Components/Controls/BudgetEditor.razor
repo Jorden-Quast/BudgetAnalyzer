@@ -33,7 +33,7 @@
 
         <MudTd DataLabel="% of Income">
             <MudNumericField T="decimal" Min="0" Max="100" Step="10M" DebounceInterval="500"
-                             @bind-Value:get=TempCategory.Percentage.Value @bind-Value:set=@((decimal newVal) => TempCategory = TempCategory with {Percentage = new(newVal)}) />
+                             @bind-Value:get=TempCategory.Percentage @bind-Value:set=@((decimal newVal) => TempCategory = TempCategory with {Percentage = newVal}) />
         </MudTd>
 
         <MudTd DataLabel="Cutoff">
