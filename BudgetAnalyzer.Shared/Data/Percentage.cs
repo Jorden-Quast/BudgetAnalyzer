@@ -14,6 +14,9 @@ public readonly struct Percentage
 
     /// <summary> Converts the percentage to a string, leaving off the '%' character. 10% => "10" </summary>
     public override string ToString() => (FractionalValue * 100).ToString();
+
+    /// <summary> Converts the percentage to a string following a specified format, leaving off the '%' character</summary>
+    public string ToString(string format) => (FractionalValue * 100).ToString(format);
     public decimal PercentOf(decimal value) => FractionalValue * value;
 
     // Percentage-Number operations
