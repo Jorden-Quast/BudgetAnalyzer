@@ -3,15 +3,12 @@ using System.Collections.Immutable;
 
 namespace BudgetAnalyzer.Shared.State;
 
-public record UpdateBudget(Guid BudgetId, string Name, IEnumerable<BudgetCategory> Categories) : IAction
+public record UpdateBudget(Budget updatedBudget) : IAction
 {
-    public UpdateBudget(Budget updatedBudget) : this(updatedBudget.Id, updatedBudget.Name, updatedBudget.Categories) { }
-
     public AnalyzerState UpdateState(AnalyzerState state)
     {
-        Budget originalBudget = state.AvailableBudgets.Single(b => b.Id == BudgetId);
-        Budget newBudget =  originalBudget with { Name = Name, Categories = Categories.ToImmutableList() };
+        Budget originalBudget = state.AvailableBudgets.Single(b => b.Id == updatedBudget.Id);
 
-        return state with { AvailableBudgets = state.AvailableBudgets.Replace(originalBudget, newBudget) };
+        return state with { AvailableBudgets = state.AvailableBudgets.Replace(originalBudget, updatedBudget) };
     }
 }
