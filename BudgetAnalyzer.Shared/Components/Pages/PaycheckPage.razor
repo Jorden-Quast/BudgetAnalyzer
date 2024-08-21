@@ -1,0 +1,19 @@
+﻿@page "/paycheck"
+
+<MudContainer>
+    <MudStack Row="true" AlignItems="AlignItems.Stretch" Justify="Justify.FlexStart" StretchItems="StretchItems.All">
+        <MudPaper Elevation="2" MaxWidth="25%">  
+            <MudList T="Type" @bind-SelectedValue=ControlType>
+                <MudListItem T="PaycheckBreakdownControl">Breakdown Paycheck</MudListItem>
+            </MudList>
+        </MudPaper>
+
+        <MudPaper Elevation="2" Class="pa-4"> 
+            <DynamicComponent Type="ControlType" />
+        </MudPaper>
+    </MudStack>
+</MudContainer>
+
+@code{
+    public Type ControlType { get; set; } = typeof(PaycheckBreakdownControl);
+}

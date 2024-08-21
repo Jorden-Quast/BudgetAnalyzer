@@ -1,0 +1,32 @@
+﻿@using BudgetAnalyzer.Shared.Data
+@namespace BudgetAnalyzer.Shared.Controls
+@inherits SubscribedComponent
+
+<MudTable T="BudgetCategory" Items="State.SelectedBudget.Categories" Hover="true" Elevation="0">
+    <ToolBarContent>
+        <MudNumericField Label="Paycheck Amount" Min="0" Step="50" Immediate="true" @bind-Value=PaycheckAmount
+                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+        <MudSpacer />
+        
+        <MudSwitch Label="Respect Cutoffs: " LabelPosition="LabelPosition.Start" Color="Color.Primary" @bind-Value=RespectCutoffs />
+    </ToolBarContent>
+
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        @if(RespectCutoffs)
+        {
+            <MudTh>Current Balance</MudTh>
+        }
+        <MudTh>Assigned Amount</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Assigned Amount">@(context.Percentage.PercentOf(PaycheckAmount).ToString("C"))</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    private decimal PaycheckAmount { get; set; }
+    private bool RespectCutoffs { get; set; } = true;
+}
