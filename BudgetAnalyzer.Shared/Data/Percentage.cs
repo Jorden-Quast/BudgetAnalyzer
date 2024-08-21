@@ -1,4 +1,6 @@
-﻿namespace BudgetAnalyzer.Shared.Data;
+﻿using System.Text.Json.Serialization;
+
+namespace BudgetAnalyzer.Shared.Data;
 
 /// <summary>
 /// Attempts to make working with percentages similar to how it would be done if writing on math on paper.
@@ -6,12 +8,13 @@
 /// </summary>
 public readonly struct Percentage
 {
+    [JsonInclude]
     private decimal FractionalValue { get; init; }
 
     /// <summary> Creates a new percentage instance. Value should be the numerical percentage ie 10% = "10" </summary>
     public Percentage(decimal percentValue) => FractionalValue = (percentValue / 100);
     public static implicit operator Percentage(decimal value) => new(value);
-    public static implicit operator decimal(Percentage value) => value.FractionalValue * 100;
+    public static explicit operator decimal(Percentage value) => value.FractionalValue * 100;
 
     /// <summary> Converts the percentage to a round-trip string, leaving off the '%' character.</summary>
     public override string ToString() => (FractionalValue * 100).ToString("R");

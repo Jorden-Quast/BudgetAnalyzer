@@ -9,15 +9,15 @@ public record BudgetCategory(string Name, Percentage Percentage, decimal? Cutoff
     public static BudgetCategory Default => new("Default Cagetory", 0, null); 
 }
 
-public sealed record Budget(string Name, ImmutableList<BudgetCategory> Categories)
+public sealed record Budget(string Name, decimal MonthlyIncome, ImmutableList<BudgetCategory> Categories)
 {
     public Guid Id { get; init; } = Guid.NewGuid();
-    public static Budget Default => new("Default Budget", []);
+    public static Budget Default => new("Default Budget", 500, []);
 
     public bool IsValid(out string? errorMessage)
     {
         errorMessage = null;
-        if (Categories.Sum(c => c.Percentage) > 100)
+        if (Categories.Sum(c => (decimal)c.Percentage) > 100)
             errorMessage = "Percentages should sum to no more that 100%";
 
         return string.IsNullOrWhiteSpace(errorMessage);
@@ -34,6 +34,7 @@ public sealed record Budget(string Name, ImmutableList<BudgetCategory> Categorie
     {
         if (other == null) return false;
         return Name == other.Name
+               && MonthlyIncome == other.MonthlyIncome
                && Categories.SequenceEqual(other.Categories);
     } 
 

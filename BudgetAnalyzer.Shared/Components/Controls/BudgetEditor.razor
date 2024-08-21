@@ -9,6 +9,11 @@
     <ToolBarContent>
         <MudTextField Label="Budget Name" @bind-Value:get=EditedBudget.Name @bind-Value:set=@((string newName) => EditedBudget = EditedBudget with {Name = newName}) Immediate="true" />
         <MudSpacer />
+
+        <MudNumericField Label="Estimated Monthly Income" Min="0" Step="50" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" Immediate="true"
+                         @bind-Value:get=EditedBudget.MonthlyIncome @bind-Value:set=@((decimal newVal) => EditedBudget = EditedBudget with {MonthlyIncome = newVal})  />
+        <MudSpacer />
+
         <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddCategory">Add New Category</MudButton>
     </ToolBarContent>
 
@@ -16,6 +21,7 @@
         <MudTh>Name</MudTh>
         <MudTh>% of Income</MudTh>
         <MudTh>Cutoff</MudTh>
+        <MudTh>$ / Month</MudTh>
         <MudTh>&nbsp;</MudTh>
     </HeaderContent>
 
@@ -23,23 +29,27 @@
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="% of Income">@context.Percentage.ToString("F1")</MudTd>
         <MudTd DataLabel="Cutoff">@(context.Cutoff is null ? "N/A" : context.Cutoff.ToString())</MudTd>
+        <MudTd DataLabel="$ / Month">@(context.Percentage.PercentOf(EditedBudget.MonthlyIncome))</MudTd>
         <MudTd> <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => RemoveCategory(context)" /> </MudTd>
     </RowTemplate>
 
     <RowEditingTemplate>
         <MudTd DataLabel="Name">
-            <MudTextField @bind-Value:get=TempCategory.Name @bind-Value:set=@((string newName) => TempCategory = TempCategory with {Name = newName}) DebounceInterval="500"/>
+            <MudTextField @bind-Value:get=TempCategory.Name @bind-Value:set=@((string newName) => TempCategory = TempCategory with {Name = newName}) Immediate="true"/>
         </MudTd>
 
         <MudTd DataLabel="% of Income">
-            <MudNumericField T="decimal" Min="0" Max="100" Step="10M" DebounceInterval="500"
-                             @bind-Value:get=TempCategory.Percentage @bind-Value:set=@((decimal newVal) => TempCategory = TempCategory with {Percentage = newVal}) />
+            <MudNumericField T="decimal" Min="0" Max="100" Step="10" Immediate="true"
+                             @bind-Value:get=(decimal)TempCategory.Percentage @bind-Value:set=@((decimal newVal) => TempCategory = TempCategory with {Percentage = newVal}) />
         </MudTd>
 
         <MudTd DataLabel="Cutoff">
-            <MudNumericField T="decimal?" Min="0" Step="50M" DebounceInterval="500"
+            <MudNumericField T="decimal?" Min="0" Step="50" Immediate="true"
                              @bind-Value:get=TempCategory.Cutoff @bind-Value:set=@((decimal? newVal) => TempCategory = TempCategory with {Cutoff = newVal}) />
         </MudTd>
+
+        <MudTd DataLabel="$ / Month" />
+        <MudTd DataLabel="&nbsp;" />
     </RowEditingTemplate>
 </MudTable>
 
