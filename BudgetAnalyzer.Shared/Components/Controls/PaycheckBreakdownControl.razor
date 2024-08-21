@@ -22,11 +22,41 @@
 
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Assigned Amount">@(context.Percentage.PercentOf(PaycheckAmount).ToString("C"))</MudTd>
+        @if (RespectCutoffs)
+        {
+            <MudTd DataLabel="Current Balance">
+                <MudNumericField @bind-Value=@(CategoryBalances[context.Id]) />
+            </MudTd>
+        }
+        <MudTd DataLabel="Assigned Amount">@CalculateAssignment(context).ToString("C")</MudTd>
     </RowTemplate>
 </MudTable>
+<MudButton OnClick="DoNothing">Debug</MudButton>
 
 @code {
     private decimal PaycheckAmount { get; set; }
     private bool RespectCutoffs { get; set; } = true;
+
+    private Dictionary<Guid, decimal> CategoryBalances { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CategoryBalances = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => 0M);
+    }
+
+    private decimal CalculateAssignment(BudgetCategory category)
+    {
+        if (!RespectCutoffs || category.Cutoff is not decimal cutoff)
+            return category.Percentage.PercentOf(PaycheckAmount);
+
+        decimal baseAssignment = category.Percentage.PercentOf(PaycheckAmount);
+        decimal proposedTotal = CategoryBalances[category.Id] + baseAssignment;
+
+        if (proposedTotal <= cutoff) return proposedTotal;
+        else return (cutoff - CategoryBalances[category.Id]);
+    }
+
+    private void DoNothing() { }
+
 }
