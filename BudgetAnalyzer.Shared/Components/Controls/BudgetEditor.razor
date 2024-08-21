@@ -48,7 +48,7 @@
                              @bind-Value:get=TempCategory.Cutoff @bind-Value:set=@((decimal? newVal) => TempCategory = TempCategory with {Cutoff = newVal}) />
         </MudTd>
 
-        <MudTd DataLabel="$ / Month" />
+        <MudTd DataLabel="$ / Month">@(TempCategory.Percentage.PercentOf(EditedBudget.MonthlyIncome))</MudTd>
         <MudTd DataLabel="&nbsp;" />
     </RowEditingTemplate>
 </MudTable>
