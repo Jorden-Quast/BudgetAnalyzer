@@ -32,7 +32,7 @@
                 <MudNumericField @bind-Value=@(CategoryBalances[context.Id]) Immediate=true />
             </MudTd>
         }
-        <MudTd DataLabel="Assigned Amount">@CalculateAssignment(context).ToString("C") @(CutoffReached(context) ? "*" : "")</MudTd>
+        <MudTd DataLabel="Assigned Amount">@CalculateAssignment(context).ToString("C") @(RespectCutoffs && CutoffReached(context) ? "*" : "")</MudTd>
     </RowTemplate>
 </MudTable>
 <MudStack Row="true">
