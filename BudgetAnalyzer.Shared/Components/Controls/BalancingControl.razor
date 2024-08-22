@@ -1,0 +1,55 @@
+﻿@using BudgetAnalyzer.Shared.Data
+@namespace BudgetAnalyzer.Shared.Controls
+@inherits SubscribedComponent
+
+<MudTable T="BudgetCategory" Items="State.SelectedBudget.Categories" Hover="true" Elevation="0" CustomFooter="true">
+    <ToolBarContent>
+        <MudNumericField Label="Bank Account Balance" Min="0" Step="50" Immediate="true" @bind-Value=BankBalance
+                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+    </ToolBarContent>
+
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Current Balance</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Current Balance">
+            <MudNumericField T="decimal" Min="0" Step="50" Immediate="true"
+                             @bind-Value:get=@(CategoryBalances[context.Id]) @bind-Value:set=@((decimal newVal) => CategoryBalances[context.Id] = newVal)/>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+@{
+    decimal budgetSum = CategoryBalances.Sum(p => p.Value);
+    decimal difference = BankBalance - budgetSum;
+    string action = difference >= 0 ? $"Add {difference.ToString("C")} to" : $"Remove {difference.ToString("C")} from";
+
+    <MudText>Total Budget Balance: @budgetSum.ToString("C")</MudText>
+    <MudText>Difference between Bank and Budget Balances: @difference.ToString("C")</MudText>
+    <MudText>Action: @action the budget</MudText>
+
+}
+
+<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+    <MudButton Color="Color.Info" OnClick="SetPageToDefault">Reset</MudButton> 
+</MudStack>
+
+@code {
+    private decimal BankBalance { get; set; }
+    private Dictionary<Guid, decimal> CategoryBalances { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SetPageToDefault();
+    }
+
+    private void SetPageToDefault()
+    {
+        BankBalance = 0;
+        CategoryBalances = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => 0M);
+    }
+}

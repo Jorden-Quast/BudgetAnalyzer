@@ -18,7 +18,8 @@
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="% To Assign">
-            <MudNumericField T="decimal" Min="0" Max=100 Step="10" Immediate="true" @bind-Value:get=@((decimal)CustomPercentages[context.Id]) @bind-Value:set=@((decimal newVal) => CustomPercentages[context.Id] = new(newVal))/>
+            <MudNumericField T="decimal" Min="0" Max=100 Step="10" Immediate="true"
+                             @bind-Value:get=@((decimal)CustomPercentages[context.Id]) @bind-Value:set=@((decimal newVal) => CustomPercentages[context.Id] = new(newVal))/>
         </MudTd>
         <MudTd DataLabel="Assigned Amount">@CalculateAssignment(context).ToString("C")</MudTd>
         <MudTd DataLabel="&nbsp;"><MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(CalculateAssignment(context).ToString("F2")))" /></MudTd>
