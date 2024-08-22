@@ -22,6 +22,7 @@
                 Assigned Amount
             </MudTooltip>
         </MudTh>
+        <MudTh>&nbsp;</MudTh>
     </HeaderContent>
 
     <RowTemplate>
@@ -33,6 +34,7 @@
             </MudTd>
         }
         <MudTd DataLabel="Assigned Amount">@CalculateAssignment(context, out bool reachedCutoff).ToString("C") @(RespectCutoffs && reachedCutoff ? "*" : "")</MudTd>
+        <MudTd DataLabel="&nbsp;"><MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(CalculateAssignment(context, out _).ToString("F2")))" /></MudTd>
     </RowTemplate>
 </MudTable>
 <MudStack Row="true" AlignItems="AlignItems.Center">
@@ -40,7 +42,7 @@
     {
         decimal leftovers = CalculateLeftovers();
         <MudText>Unassigned Amount: @leftovers.ToString("C")</MudText> 
-        <MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(leftovers.ToString("R")))" />
+        <MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(leftovers.ToString("F2")))" />
     }
     <MudSpacer />
 

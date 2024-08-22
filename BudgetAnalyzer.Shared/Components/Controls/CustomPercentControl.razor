@@ -1,0 +1,50 @@
+﻿@using BudgetAnalyzer.Shared.Data
+@namespace BudgetAnalyzer.Shared.Controls
+@inherits SubscribedComponent
+
+<MudTable T="BudgetCategory" Items="State.SelectedBudget.Categories" Hover="true" Elevation="0">
+    <ToolBarContent>
+        <MudNumericField Label="Paycheck Amount" Min="0" Step="50" Immediate="true" @bind-Value=PaycheckAmount
+                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+    </ToolBarContent>
+
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>% To Assign</MudTh>
+        <MudTh>Assigned Amount</MudTh>
+        <MudTh>&nbsp;</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="% To Assign">
+            <MudNumericField T="decimal" Min="0" Max=100 Step="10" Immediate="true" @bind-Value:get=@((decimal)CustomPercentages[context.Id]) @bind-Value:set=@((decimal newVal) => CustomPercentages[context.Id] = new(newVal))/>
+        </MudTd>
+        <MudTd DataLabel="Assigned Amount">@CalculateAssignment(context).ToString("C")</MudTd>
+        <MudTd DataLabel="&nbsp;"><MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(CalculateAssignment(context).ToString("F2")))" /></MudTd>
+    </RowTemplate>
+</MudTable>
+
+<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+    <MudButton Color="Color.Info" OnClick="SetPageToDefault">Reset</MudButton> 
+</MudStack>
+
+@code {
+    private decimal PaycheckAmount { get; set; }
+
+    private Dictionary<Guid, Percentage> CustomPercentages { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SetPageToDefault();
+    }
+
+    private decimal CalculateAssignment(BudgetCategory category) => CustomPercentages[category.Id].PercentOf(PaycheckAmount);
+
+    private void SetPageToDefault()
+    {
+        PaycheckAmount = 0;
+        CustomPercentages = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => new Percentage(0));
+    }
+}

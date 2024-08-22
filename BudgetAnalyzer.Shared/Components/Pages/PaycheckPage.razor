@@ -4,7 +4,8 @@
     <MudStack Row="true" AlignItems="AlignItems.Stretch" Justify="Justify.FlexStart" StretchItems="StretchItems.All">
         <MudPaper Elevation="2" MaxWidth="25%">  
             <MudList T="Type" @bind-SelectedValue=ControlType>
-                <MudListItem T="PaycheckBreakdownControl">Breakdown Paycheck</MudListItem>
+                <MudListItem Value="typeof(PaycheckBreakdownControl)">Standard Breakdown</MudListItem>
+                <MudListItem Value="typeof(CustomPercentControl)">Custom Breakdown</MudListItem>
             </MudList>
         </MudPaper>
 
@@ -15,5 +16,5 @@
 </MudContainer>
 
 @code{
-    public Type ControlType { get; set; } = typeof(PaycheckBreakdownControl);
+    private Type ControlType { get; set; } = typeof(PaycheckBreakdownControl);
 }
