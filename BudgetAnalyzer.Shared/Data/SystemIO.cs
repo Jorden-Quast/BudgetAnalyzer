@@ -3,7 +3,7 @@ using CommunityToolkit.Maui.Storage;
 
 namespace BudgetAnalyzer.Shared.Data;
 
-public static class AppDataTransporter
+public static class SystemIO
 {
     public static async Task<string?> UploadJsonFile()
     {
@@ -26,5 +26,5 @@ public static class AppDataTransporter
     }
 
     public static async Task DownloadJsonFile(AnalyzerState state) => await FileSaver.SaveAsync("AppData.json", new MemoryStream(state.ToJsonByteArray()));
-    public static async Task CopyJson(AnalyzerState state) => await Clipboard.SetTextAsync(state.ToJson());
+    public static async Task CopyText(string text) => await Clipboard.SetTextAsync(text);
 }

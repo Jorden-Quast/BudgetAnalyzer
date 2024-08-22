@@ -37,13 +37,13 @@
 @code{
     public async Task FileUpload()
     {
-        string? fileText = await AppDataTransporter.UploadJsonFile();
+        string? fileText = await SystemIO.UploadJsonFile();
 
         if (fileText is null) return;
         AddAction(new SetAppFromJsonAction(fileText));
     }
 
-    public async Task FileDownload() => await AppDataTransporter.DownloadJsonFile(State);
-    public async Task CopyAppData() => await AppDataTransporter.CopyJson(State);
+    public async Task FileDownload() => await SystemIO.DownloadJsonFile(State);
+    public async Task CopyAppData() => await SystemIO.CopyText(State.ToJson());
 
 }

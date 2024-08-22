@@ -32,19 +32,20 @@
                 <MudNumericField @bind-Value=@(CategoryBalances[context.Id]) Immediate=true />
             </MudTd>
         }
-        <MudTd DataLabel="Assigned Amount">@CalculateAssignment(context).ToString("C") @(RespectCutoffs && CutoffReached(context) ? "*" : "")</MudTd>
+        <MudTd DataLabel="Assigned Amount">@CalculateAssignment(context, out bool reachedCutoff).ToString("C") @(RespectCutoffs && reachedCutoff ? "*" : "")</MudTd>
     </RowTemplate>
 </MudTable>
-<MudStack Row="true">
-@if (RespectCutoffs)
-{
-   <MudText>Unassigned Amount: @CalculateLeftovers().ToString("C")</MudText> 
-}
-<MudSpacer />
+<MudStack Row="true" AlignItems="AlignItems.Center">
+    @if (RespectCutoffs)
+    {
+        decimal leftovers = CalculateLeftovers();
+        <MudText>Unassigned Amount: @leftovers.ToString("C")</MudText> 
+        <MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(leftovers.ToString("R")))" />
+    }
+    <MudSpacer />
 
-<MudButton Color="Color.Info" OnClick="SetPageToDefault">Reset</MudButton> 
+    <MudButton Color="Color.Info" OnClick="SetPageToDefault">Reset</MudButton> 
 </MudStack>
-<MudButton OnClick="DoNothing">Debug</MudButton>
 
 @code {
     private decimal PaycheckAmount { get; set; }
@@ -58,8 +59,9 @@
         SetPageToDefault();
     }
 
-    private decimal CalculateAssignment(BudgetCategory category)
+    private decimal CalculateAssignment(BudgetCategory category, out bool reachedCutoff)
     {
+        reachedCutoff = false;
         if (!RespectCutoffs || category.Cutoff is not decimal cutoff)
             return category.Percentage.PercentOf(PaycheckAmount);
 
@@ -67,19 +69,18 @@
         decimal proposedTotal = CategoryBalances[category.Id] + baseAssignment;
 
         if (proposedTotal <= cutoff) return baseAssignment;
-        return Math.Max(0, cutoff - CategoryBalances[category.Id]);  // If the current total is over the cutoff, don't take out money
+        else
+        {
+            reachedCutoff = true;
+            return Math.Max(0, cutoff - CategoryBalances[category.Id]);  // If the current total is over the cutoff, don't take out money
+        }
     }
 
-    private bool CutoffReached(BudgetCategory category) => (CategoryBalances[category.Id] + CalculateAssignment(category)) >= category.Cutoff;
-    private decimal CalculateLeftovers() => PaycheckAmount - State.SelectedBudget.Categories.Sum(c => CalculateAssignment(c));
+    private decimal CalculateLeftovers() => PaycheckAmount - State.SelectedBudget.Categories.Sum(c => CalculateAssignment(c, out _));
 
     private void SetPageToDefault()
     {
         PaycheckAmount = 0;
         CategoryBalances = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => 0M);
     }
-
-    private void DoNothing() { 
-}
-
 }
