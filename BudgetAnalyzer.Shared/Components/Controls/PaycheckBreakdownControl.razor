@@ -37,11 +37,11 @@
         <MudTd DataLabel="&nbsp;"><MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(CalculateAssignment(context, out _).ToString("F2")))" /></MudTd>
     </RowTemplate>
 </MudTable>
-<MudStack Row="true" AlignItems="AlignItems.Center">
+<MudStack Row="true" AlignItems="AlignItems.Center" Class="pt-4">
     @if (RespectCutoffs)
     {
         decimal leftovers = CalculateLeftovers();
-        <MudText>Unassigned Amount: @leftovers.ToString("C")</MudText> 
+        <MudText Style="font-weight:800;">Unassigned Amount: @leftovers.ToString("C")</MudText>
         <MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(leftovers.ToString("F2")))" />
     }
     <MudSpacer />

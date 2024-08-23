@@ -16,24 +16,23 @@
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Current Balance">
-            <MudNumericField T="decimal" Min="0" Step="50" Immediate="true"
-                             @bind-Value:get=@(CategoryBalances[context.Id]) @bind-Value:set=@((decimal newVal) => CategoryBalances[context.Id] = newVal)/>
+            <MudNumericField T="decimal" Min="0" Step="50" Immediate="true" @bind-Value=@CategoryBalances[context.Id] />
         </MudTd>
     </RowTemplate>
+
+    <FooterContent>
+        <MudTFootRow>
+            <MudTd Style="font-weight: 500;">Total</MudTd>
+            <MudTd Style="font-weight: 500;">@CategoryBalances.Sum(p => p.Value).ToString("C")</MudTd>
+        </MudTFootRow>
+    </FooterContent>
 </MudTable>
 
-@{
-    decimal budgetSum = CategoryBalances.Sum(p => p.Value);
-    decimal difference = BankBalance - budgetSum;
-    string action = difference >= 0 ? $"Add {difference.ToString("C")} to" : $"Remove {difference.ToString("C")} from";
 
-    <MudText>Total Budget Balance: @budgetSum.ToString("C")</MudText>
-    <MudText>Difference between Bank and Budget Balances: @difference.ToString("C")</MudText>
-    <MudText>Action: @action the budget</MudText>
+<MudStack Row="true" AlignItems="AlignItems.Center" Class="pt-4">
+    <MudText Style="font-weight: 800;">@GetRecommendation()</MudText>
+    <MudSpacer />
 
-}
-
-<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
     <MudButton Color="Color.Info" OnClick="SetPageToDefault">Reset</MudButton> 
 </MudStack>
 
@@ -45,6 +44,17 @@
     {
         base.OnInitialized();
         SetPageToDefault();
+    }
+
+    private string GetRecommendation()
+    {
+        decimal difference = BankBalance - CategoryBalances.Sum(p => p.Value);
+        if (difference == 0)
+            return "The budget is balanced";
+
+        string displayDifference = Math.Abs(difference).ToString("C");
+        string action = difference >= 0 ? $"add {displayDifference} to" : $"remove {displayDifference} from";
+        return $"The budget is not balanced, {action} the budget";
     }
 
     private void SetPageToDefault()
