@@ -28,8 +28,8 @@
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="% of Income">@context.Percentage.ToString("F1")</MudTd>
-        <MudTd DataLabel="Cutoff">@(context.Cutoff is null ? "N/A" : context.Cutoff.ToString())</MudTd>
-        <MudTd DataLabel="$ / Month">@(context.Percentage.PercentOf(EditedBudget.MonthlyIncome))</MudTd>
+        <MudTd DataLabel="Cutoff">@(context.Cutoff is null ? "N/A" : context.Cutoff.Value.ToString("F2"))</MudTd>
+        <MudTd DataLabel="$ / Month">@(context.Percentage.PercentOf(EditedBudget.MonthlyIncome).ToString("F2"))</MudTd>
         <MudTd> <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => RemoveCategory(context)" /> </MudTd>
     </RowTemplate>
 
@@ -48,7 +48,7 @@
                              @bind-Value:get=TempCategory.Cutoff @bind-Value:set=@((decimal? newVal) => TempCategory = TempCategory with {Cutoff = newVal}) />
         </MudTd>
 
-        <MudTd DataLabel="$ / Month" />
+        <MudTd DataLabel="$ / Month">@(TempCategory.Percentage.PercentOf(EditedBudget.MonthlyIncome))</MudTd>
         <MudTd DataLabel="&nbsp;" />
     </RowEditingTemplate>
 </MudTable>

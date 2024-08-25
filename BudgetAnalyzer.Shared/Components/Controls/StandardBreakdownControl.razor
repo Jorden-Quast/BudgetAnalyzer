@@ -1,0 +1,88 @@
+﻿@using BudgetAnalyzer.Shared.Data
+@namespace BudgetAnalyzer.Shared.Controls
+@inherits SubscribedComponent
+
+<MudTable T="BudgetCategory" Items="State.SelectedBudget.Categories" Hover="true" Elevation="0">
+    <ToolBarContent>
+        <MudNumericField Label="Income" Min="0" Step="50" Immediate="true" @bind-Value=Income
+                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+        <MudSpacer />
+        
+        <MudSwitch Label="Respect Cutoffs: " LabelPosition="LabelPosition.Start" Color="Color.Primary" @bind-Value=RespectCutoffs />
+    </ToolBarContent>
+
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        @if(RespectCutoffs)
+        {
+            <MudTh>Current Balance</MudTh>
+        }
+        <MudTh>
+            <MudTooltip Text="The amount to assign to each budget. '*' = cutoff is reached">
+                Assigned Amount
+            </MudTooltip>
+        </MudTh>
+        <MudTh>&nbsp;</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        @if (RespectCutoffs)
+        {
+            <MudTd DataLabel="Current Balance">
+                <MudNumericField @bind-Value=@(CategoryBalances[context.Id]) Immediate=true />
+            </MudTd>
+        }
+        <MudTd DataLabel="Assigned Amount">@CalculateAssignment(context, out bool reachedCutoff).ToString("C") @(RespectCutoffs && reachedCutoff ? "*" : "")</MudTd>
+        <MudTd DataLabel="&nbsp;"><MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(CalculateAssignment(context, out _).ToString("F2")))" /></MudTd>
+    </RowTemplate>
+</MudTable>
+<MudStack Row="true" AlignItems="AlignItems.Center">
+    @if (RespectCutoffs)
+    {
+        decimal leftovers = CalculateLeftovers();
+        <MudText Style="font-weight:800;">Unassigned Amount: @leftovers.ToString("C")</MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(leftovers.ToString("F2")))" />
+    }
+    <MudSpacer />
+
+    <MudButton Color="Color.Info" OnClick="SetPageToDefault">Reset</MudButton> 
+</MudStack>
+
+@code {
+    private decimal Income { get; set; }
+    private bool RespectCutoffs { get; set; } = true;
+
+    private Dictionary<Guid, decimal> CategoryBalances { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SetPageToDefault();
+    }
+
+    private decimal CalculateAssignment(BudgetCategory category, out bool reachedCutoff)
+    {
+        reachedCutoff = false;
+        if (!RespectCutoffs || category.Cutoff is not decimal cutoff)
+            return category.Percentage.PercentOf(Income);
+
+        decimal baseAssignment = category.Percentage.PercentOf(Income);
+        decimal proposedTotal = CategoryBalances[category.Id] + baseAssignment;
+
+        if (proposedTotal <= cutoff) return baseAssignment;
+        else
+        {
+            reachedCutoff = true;
+            return Math.Max(0, cutoff - CategoryBalances[category.Id]);  // If the current total is over the cutoff, don't take out money
+        }
+    }
+
+    private decimal CalculateLeftovers() => Income - State.SelectedBudget.Categories.Sum(c => CalculateAssignment(c, out _));
+
+    private void SetPageToDefault()
+    {
+        Income = 0;
+        CategoryBalances = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => 0M);
+    }
+}

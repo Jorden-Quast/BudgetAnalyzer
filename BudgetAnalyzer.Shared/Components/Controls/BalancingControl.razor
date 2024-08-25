@@ -1,0 +1,65 @@
+﻿@using BudgetAnalyzer.Shared.Data
+@namespace BudgetAnalyzer.Shared.Controls
+@inherits SubscribedComponent
+
+<MudTable T="BudgetCategory" Items="State.SelectedBudget.Categories" Hover="true" Elevation="0" CustomFooter="true">
+    <ToolBarContent>
+        <MudNumericField Label="Bank Account Balance" Min="0" Step="50" Immediate="true" @bind-Value=BankBalance
+                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+    </ToolBarContent>
+
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Current Balance</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Current Balance">
+            <MudNumericField T="decimal" Min="0" Step="50" Immediate="true" @bind-Value=@CategoryBalances[context.Id] />
+        </MudTd>
+    </RowTemplate>
+
+    <FooterContent>
+        <MudTFootRow>
+            <MudTd Style="font-weight: 500;">Total</MudTd>
+            <MudTd Style="font-weight: 500;">@CategoryBalances.Sum(p => p.Value).ToString("C")</MudTd>
+        </MudTFootRow>
+    </FooterContent>
+</MudTable>
+
+
+<MudStack Row="true" AlignItems="AlignItems.Center" Class="pt-4">
+    <MudText Style="font-weight: 800;">@GetRecommendation()</MudText>
+    <MudSpacer />
+
+    <MudButton Color="Color.Info" OnClick="SetPageToDefault">Reset</MudButton> 
+</MudStack>
+
+@code {
+    private decimal BankBalance { get; set; }
+    private Dictionary<Guid, decimal> CategoryBalances { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SetPageToDefault();
+    }
+
+    private string GetRecommendation()
+    {
+        decimal difference = BankBalance - CategoryBalances.Sum(p => p.Value);
+        if (difference == 0)
+            return "The budget is balanced";
+
+        string displayDifference = Math.Abs(difference).ToString("C");
+        string action = difference >= 0 ? $"add {displayDifference} to" : $"remove {displayDifference} from";
+        return $"The budget is not balanced, {action} the budget";
+    }
+
+    private void SetPageToDefault()
+    {
+        BankBalance = 0;
+        CategoryBalances = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => 0M);
+    }
+}
