@@ -4,7 +4,7 @@
 
 <MudTable T="BudgetCategory" Items="State.SelectedBudget.Categories" Hover="true" Elevation="0">
     <ToolBarContent>
-        <MudNumericField Label="Paycheck Amount" Min="0" Step="50" Immediate="true" @bind-Value=PaycheckAmount
+        <MudNumericField Label="Income" Min="0" Step="50" Immediate="true" @bind-Value=Income
                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
     </ToolBarContent>
 
@@ -31,7 +31,7 @@
 </MudStack>
 
 @code {
-    private decimal PaycheckAmount { get; set; }
+    private decimal Income { get; set; }
 
     private Dictionary<Guid, Percentage> CustomPercentages { get; set; } = default!;
 
@@ -41,11 +41,11 @@
         SetPageToDefault();
     }
 
-    private decimal CalculateAssignment(BudgetCategory category) => CustomPercentages[category.Id].PercentOf(PaycheckAmount);
+    private decimal CalculateAssignment(BudgetCategory category) => CustomPercentages[category.Id].PercentOf(Income);
 
     private void SetPageToDefault()
     {
-        PaycheckAmount = 0;
+        Income = 0;
         CustomPercentages = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => new Percentage(0));
     }
 }

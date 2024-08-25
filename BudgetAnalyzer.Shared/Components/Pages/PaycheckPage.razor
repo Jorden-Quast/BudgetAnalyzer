@@ -1,21 +1,19 @@
-﻿@page "/paycheck"
+﻿@page "/income"
 
-<MudContainer>
-    <MudStack Row="true" AlignItems="AlignItems.Stretch" Justify="Justify.FlexStart" StretchItems="StretchItems.All">
-        <MudPaper Elevation="2" MaxWidth="25%">  
-            <MudList T="Type" @bind-SelectedValue=ControlType>
-                <MudListItem Value="typeof(PaycheckBreakdownControl)">Standard Breakdown</MudListItem>
-                <MudListItem Value="typeof(CustomPercentControl)">Custom Breakdown</MudListItem>
-                <MudListItem Value="typeof(BalancingControl)">Balance Budget</MudListItem>
-            </MudList>
-        </MudPaper>
+<MudContainer Class="mt-2">
 
-        <MudPaper Elevation="2" Class="pa-4"> 
-            <DynamicComponent Type="ControlType" />
-        </MudPaper>
-    </MudStack>
+    <MudTabs Position="Position.Start" PanelClass="d-block pa-2" KeepPanelsAlive="true">
+        <MudTabPanel Text="Standard Breakdown" ToolTip="Use standard precentages and cutoffs">
+            <StandardBreakdownControl />
+        </MudTabPanel>
+
+        <MudTabPanel Text="Custom Breakdown" ToolTip="Use custom percentage values">
+            <CustomPercentControl />
+        </MudTabPanel>
+
+        <MudTabPanel Text="Balance Budget" ToolTip="Check bank = budget balance">
+            <BalancingControl />
+        </MudTabPanel>
+    </MudTabs>
+
 </MudContainer>
-
-@code{
-    private Type ControlType { get; set; } = typeof(PaycheckBreakdownControl);
-}

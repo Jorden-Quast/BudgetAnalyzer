@@ -4,7 +4,7 @@
 
 <MudTable T="BudgetCategory" Items="State.SelectedBudget.Categories" Hover="true" Elevation="0">
     <ToolBarContent>
-        <MudNumericField Label="Paycheck Amount" Min="0" Step="50" Immediate="true" @bind-Value=PaycheckAmount
+        <MudNumericField Label="Income" Min="0" Step="50" Immediate="true" @bind-Value=Income
                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
         <MudSpacer />
         
@@ -37,7 +37,7 @@
         <MudTd DataLabel="&nbsp;"><MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(CalculateAssignment(context, out _).ToString("F2")))" /></MudTd>
     </RowTemplate>
 </MudTable>
-<MudStack Row="true" AlignItems="AlignItems.Center" Class="pt-4">
+<MudStack Row="true" AlignItems="AlignItems.Center">
     @if (RespectCutoffs)
     {
         decimal leftovers = CalculateLeftovers();
@@ -50,7 +50,7 @@
 </MudStack>
 
 @code {
-    private decimal PaycheckAmount { get; set; }
+    private decimal Income { get; set; }
     private bool RespectCutoffs { get; set; } = true;
 
     private Dictionary<Guid, decimal> CategoryBalances { get; set; } = default!;
@@ -65,9 +65,9 @@
     {
         reachedCutoff = false;
         if (!RespectCutoffs || category.Cutoff is not decimal cutoff)
-            return category.Percentage.PercentOf(PaycheckAmount);
+            return category.Percentage.PercentOf(Income);
 
-        decimal baseAssignment = category.Percentage.PercentOf(PaycheckAmount);
+        decimal baseAssignment = category.Percentage.PercentOf(Income);
         decimal proposedTotal = CategoryBalances[category.Id] + baseAssignment;
 
         if (proposedTotal <= cutoff) return baseAssignment;
@@ -78,11 +78,11 @@
         }
     }
 
-    private decimal CalculateLeftovers() => PaycheckAmount - State.SelectedBudget.Categories.Sum(c => CalculateAssignment(c, out _));
+    private decimal CalculateLeftovers() => Income - State.SelectedBudget.Categories.Sum(c => CalculateAssignment(c, out _));
 
     private void SetPageToDefault()
     {
-        PaycheckAmount = 0;
+        Income = 0;
         CategoryBalances = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => 0M);
     }
 }
