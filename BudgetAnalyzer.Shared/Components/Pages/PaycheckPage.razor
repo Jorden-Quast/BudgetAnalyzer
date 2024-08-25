@@ -1,19 +1,27 @@
 ﻿@page "/income"
 
+<style>
+    .tabPanel{
+        text-transform:none;
+    }
+</style>
+
 <MudContainer Class="mt-2">
 
-    <MudTabs Position="Position.Start" PanelClass="d-block pa-2" KeepPanelsAlive="true">
-        <MudTabPanel Text="Standard Breakdown" ToolTip="Use standard precentages and cutoffs">
-            <StandardBreakdownControl />
-        </MudTabPanel>
+    <MudTabs Position="Position.Start" TabPanelClass="tabPanel" PanelClass="d-block" KeepPanelsAlive="true" Rounded=true Elevation="2">
+        <MudPaper Elevation="2" Class="ml-3 pa-2" Style="text-transform:none;">
+            <MudTabPanel Text="Standard Breakdown" ToolTip="Use standard precentages and cutoffs">
+                <StandardBreakdownControl />
+            </MudTabPanel>
 
-        <MudTabPanel Text="Custom Breakdown" ToolTip="Use custom percentage values">
-            <CustomPercentControl />
-        </MudTabPanel>
+            <MudTabPanel Text="Custom Breakdown" ToolTip="Use custom percentage values">
+                <CustomPercentControl />
+            </MudTabPanel>
 
-        <MudTabPanel Text="Balance Budget" ToolTip="Check bank = budget balance">
-            <BalancingControl />
-        </MudTabPanel>
+            <MudTabPanel Text="Balance Budget" ToolTip="Check bank = budget balance">
+                <BalancingControl />
+            </MudTabPanel>
+        </MudPaper>
     </MudTabs>
 
 </MudContainer>

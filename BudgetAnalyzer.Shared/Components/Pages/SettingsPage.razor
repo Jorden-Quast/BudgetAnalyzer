@@ -4,8 +4,8 @@
 @inherits SubscribedComponent
 
 <MudContainer>
-    <MudStack Row="true" AlignItems="AlignItems.Stretch" Justify="Justify.FlexStart" StretchItems="StretchItems.All">
-        <MudPaper Elevation="2" MaxWidth="25%">  
+    <MudStack Row="true" AlignItems="AlignItems.Stretch" StretchItems="StretchItems.End">
+        <MudPaper Elevation="2">  
             <MudList T="Guid" @bind-SelectedValue=SelectedId>
                 <MudListItem Value="OptionsGuid" Icon="@Icons.Material.Filled.Settings">App Options</MudListItem>
                 <MudDivider />
