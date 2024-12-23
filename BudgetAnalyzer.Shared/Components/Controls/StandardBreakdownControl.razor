@@ -8,7 +8,7 @@
                          Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
         <MudSpacer />
         
-        <MudSwitch Label="Respect Cutoffs: " LabelPosition="LabelPosition.Start" Color="Color.Primary" @bind-Value=RespectCutoffs />
+        <MudSwitch Label="Respect Cutoffs: " LabelPosition="LabelPosition.Start" Color="Color.Secondary" @bind-Value=RespectCutoffs />
     </ToolBarContent>
 
     <HeaderContent>
@@ -46,7 +46,7 @@
     }
     <MudSpacer />
 
-    <MudButton Color="Color.Info" OnClick="SetPageToDefault">Reset</MudButton> 
+    <MudButton Color="Color.Tertiary" OnClick="SetPageToDefault">Reset</MudButton> 
 </MudStack>
 
 @code {
