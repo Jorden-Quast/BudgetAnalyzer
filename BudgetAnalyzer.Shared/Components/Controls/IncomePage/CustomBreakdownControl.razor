@@ -1,0 +1,55 @@
+﻿@using BudgetAnalyzer.Shared.Data
+@namespace BudgetAnalyzer.Shared.Controls
+@inherits IncomePageControl
+
+<MudTable T="BudgetCategory" Items="State.SelectedBudget.Categories" Hover="true" Elevation="0">
+    <ToolBarContent>
+        <MudNumericField Label="Income" Min="0" Step="50" Immediate="true" 
+        @bind-Value:get=Income @bind-Value:set="SetIncome"
+        Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+    </ToolBarContent>
+
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>% To Assign</MudTh>
+        <MudTh>Assigned Amount</MudTh>
+        <MudTh>&nbsp;</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="% To Assign">
+            <MudNumericField T="decimal" Min="0" Max=100 Step="10" Immediate="true"
+            @bind-Value:get=@((decimal)CustomPercentages[context.Id]) @bind-Value:set=@((decimal newVal) => SetPercentage(newVal, context.Id))/>
+        </MudTd>
+        <MudTd DataLabel="Assigned Amount">@CalculateAssignment(context).ToString("C")</MudTd>
+        <MudTd DataLabel="&nbsp;"><MudIconButton Icon="@Icons.Material.Filled.ContentCopy" Size="Size.Small" OnClick="@(() => SystemIO.CopyText(CalculateAssignment(context).ToString("F2")))" /></MudTd>
+    </RowTemplate>
+</MudTable>
+
+<MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+    <MudButton Color="Color.Tertiary" OnClick="SetControlToDefault">Reset</MudButton> 
+</MudStack>
+
+@code {
+    private decimal Income => State.IncomeState.CustomIncome;
+    private IReadOnlyDictionary<Guid, Percentage> CustomPercentages => State.IncomeState.CustomPercentages;
+
+    private decimal CalculateAssignment(BudgetCategory category) => CustomPercentages[category.Id].PercentOf(Income);
+
+    private void SetIncome(decimal newValue) => AddAction(new SetIncomeStateAction(State.IncomeState with { CustomIncome = newValue }));
+    private void SetPercentage(decimal newValue, Guid categoryId)
+    {
+        var balances = State.IncomeState.CustomPercentages.ToDictionary();
+        balances[categoryId] = newValue;
+        AddAction(new SetIncomeStateAction(State.IncomeState with { CustomPercentages = balances }));
+    }
+
+    protected override void SetControlToDefault()
+    {
+        IncomeState resetState = State.IncomeState with { CustomIncome = 0,
+                                                          CustomPercentages = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => new Percentage(0)) 
+                                                        };
+        AddAction(new SetIncomeStateAction(resetState));
+    }
+}

@@ -1,14 +1,16 @@
 ﻿@using BudgetAnalyzer.Shared.Data
 @namespace BudgetAnalyzer.Shared.Controls
-@inherits SubscribedComponent
+@inherits IncomePageControl
 
 <MudTable T="BudgetCategory" Items="State.SelectedBudget.Categories" Hover="true" Elevation="0">
     <ToolBarContent>
-        <MudNumericField Label="Income" Min="0" Step="50" Immediate="true" @bind-Value=Income
-                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+        <MudNumericField Label="Income" Min="0" Step="50" Immediate="true"
+        @bind-Value:get=State.IncomeState.StandardIncome @bind-Value:set="SetIncome"
+        Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
         <MudSpacer />
-        
-        <MudSwitch Label="Respect Cutoffs: " LabelPosition="LabelPosition.Start" Color="Color.Secondary" @bind-Value=RespectCutoffs />
+
+        <MudSwitch Label="Respect Cutoffs: " LabelPosition="LabelPosition.Start" Color="Color.Secondary" 
+        @bind-Value:get=RespectCutoffs @bind-Value:set="SetRespectCutoffs" />
     </ToolBarContent>
 
     <HeaderContent>
@@ -30,7 +32,8 @@
         @if (RespectCutoffs)
         {
             <MudTd DataLabel="Current Balance">
-                <MudNumericField @bind-Value=@(CategoryBalances[context.Id]) Immediate=true />
+                <MudNumericField Immediate="true"
+                @bind-Value:get=State.IncomeState.CategoryBalances[context.Id] @bind-Value:set=@((decimal newVal) => SetCategoryBalance(newVal, context.Id)) />
             </MudTd>
         }
         <MudTd DataLabel="Assigned Amount">@CalculateAssignment(context, out bool reachedCutoff).ToString("C") @(RespectCutoffs && reachedCutoff ? "*" : "")</MudTd>
@@ -46,20 +49,13 @@
     }
     <MudSpacer />
 
-    <MudButton Color="Color.Tertiary" OnClick="SetPageToDefault">Reset</MudButton> 
+    <MudButton Color="Color.Tertiary" OnClick="SetControlToDefault">Reset</MudButton> 
 </MudStack>
 
 @code {
-    private decimal Income { get; set; }
-    private bool RespectCutoffs { get; set; } = true;
-
-    private Dictionary<Guid, decimal> CategoryBalances { get; set; } = default!;
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        SetPageToDefault();
-    }
+    private decimal Income => State.IncomeState.StandardIncome;
+    private IReadOnlyDictionary<Guid, decimal> CategoryBalances => State.IncomeState.CategoryBalances;
+    private bool RespectCutoffs => State.IncomeState.RespectCutoffs;
 
     private decimal CalculateAssignment(BudgetCategory category, out bool reachedCutoff)
     {
@@ -80,9 +76,15 @@
 
     private decimal CalculateLeftovers() => Income - State.SelectedBudget.Categories.Sum(c => CalculateAssignment(c, out _));
 
-    private void SetPageToDefault()
+    private void SetIncome(decimal newValue) => AddAction(new SetIncomeStateAction(State.IncomeState with { StandardIncome = newValue }));
+    private void SetRespectCutoffs(bool newValue) => AddAction(new SetIncomeStateAction(State.IncomeState with { RespectCutoffs = newValue }));
+
+    protected override void SetControlToDefault()
     {
-        Income = 0;
-        CategoryBalances = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => 0M);
+        IncomeState resetState = State.IncomeState with { StandardIncome = 0,
+                                                          CategoryBalances = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => 0M),
+                                                          RespectCutoffs = true
+                                                        };
+        AddAction(new SetIncomeStateAction(resetState));
     }
 }
