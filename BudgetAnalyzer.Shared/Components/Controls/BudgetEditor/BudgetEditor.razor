@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@using BudgetAnalyzer.Shared.Data
+@using System.Collections.Immutable
+@namespace BudgetAnalyzer.Shared.Controls
+@inherits SubscribedComponent
+
+<MudStack Row="true" AlignItems="AlignItems.Baseline" Class="mb-4">
+    <MudTextField Label="Budget Name" @bind-Value:get=BudgetToEdit.Name @bind-Value:set="@((string newName) => AddAction(new UpdateBudget(BudgetToEdit with {Name = newName})))" Immediate="true" />
+    <MudSpacer />
+    <MudText>Total Monthly Income: <span style="font-weight: 800;">$@BudgetToEdit.TotalMonthlyIncome.ToString("F2")</span></MudText>
+</MudStack>
+
+@*TODO: Would like the panels to stretch the width of the container*@
+<MudTabs TabHeaderClass="mb-2">
+    <MudTabPanel Text="Budget Categories" ToolTip="Define how money is distributed">
+        <CategoryEditor BudgetToEdit="BudgetToEdit" />
+    </MudTabPanel>
+    <MudTabPanel Text="Income Sources" Tooltip="Define where money comes from">
+        <MudText>Todo: Create Income Selector</MudText>
+    </MudTabPanel>
+</MudTabs>
+
+<MudStack Row="true" AlignItems="AlignItems.Baseline" Class="mt-4">
+    @if (!IsValid)
+    {
+        <MudText Color="Color.Error">@ErrorMessage</MudText>
+    }
+    <MudSpacer />
+    <MudButton Variant="Variant.Outlined" OnClick="DeleteBudget" Color="Color.Error">Delete Budget</MudButton>
+</MudStack>
+
+@code {
+    [Parameter, EditorRequired]
+    public required Budget BudgetToEdit { get; set; }
+
+    private bool IsValid => BudgetToEdit.IsValid(out ErrorMessage);
+    private string? ErrorMessage;
+
+    private void DeleteBudget() => AddAction(new DeleteBudgetAction(BudgetToEdit.Id));
+}
