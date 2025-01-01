@@ -16,7 +16,7 @@
         <CategoryEditor BudgetToEdit="BudgetToEdit" />
     </MudTabPanel>
     <MudTabPanel Text="Income Sources" Tooltip="Define where money comes from">
-        <MudText>Todo: Create Income Selector</MudText>
+        <IncomeEditor BudgetToEdit="BudgetToEdit" />
     </MudTabPanel>
 </MudTabs>
 
@@ -30,6 +30,7 @@
 </MudStack>
 
 @code {
+    // TODO: Make this a cascading value
     [Parameter, EditorRequired]
     public required Budget BudgetToEdit { get; set; }
 
