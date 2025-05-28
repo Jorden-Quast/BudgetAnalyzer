@@ -4,7 +4,7 @@
 
 <MudTable T="BudgetCategory" Items="State.SelectedBudget.Categories" Hover="true" Elevation="0" CustomFooter="true">
     <ToolBarContent>
-        <MudNumericField Label="Bank Account Balance" Min="0" Step="50" Immediate="true" 
+        <MudNumericField Label="Bank Account Balance" Step="50" Immediate="true" 
         @bind-Value:get=BankBalance @bind-Value:set="SetBalance"
         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
     </ToolBarContent>
@@ -17,7 +17,7 @@
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Current Balance">
-            <MudNumericField T="decimal" Min="0" Step="50" Immediate="true" 
+            <MudNumericField T="decimal" Step="50" Immediate="true" 
             @bind-Value:get=@CategoryBalances[context.Id] @bind-Value:set=@((decimal newValue) => SetCategoryBalance(newValue, context.Id))/>
         </MudTd>
     </RowTemplate>

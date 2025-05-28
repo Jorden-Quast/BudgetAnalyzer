@@ -10,7 +10,6 @@
     <MudText>Total Monthly Income: <span style="font-weight: 800;">$@BudgetToEdit.TotalMonthlyIncome.ToString("F2")</span></MudText>
 </MudStack>
 
-@*TODO: Would like the panels to stretch the width of the container*@
 <MudTabs TabHeaderClass="mb-2">
     <MudTabPanel Text="Budget Categories" ToolTip="Define how money is distributed">
         <CategoryEditor BudgetToEdit="BudgetToEdit" />
@@ -30,7 +29,6 @@
 </MudStack>
 
 @code {
-    // TODO: Make this a cascading value
     [Parameter, EditorRequired]
     public required Budget BudgetToEdit { get; set; }
 
