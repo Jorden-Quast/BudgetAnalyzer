@@ -1,0 +1,75 @@
+﻿@using BudgetAnalyzer.Shared.Data
+@using System.Collections.Immutable
+@namespace BudgetAnalyzer.Shared.Controls
+@inherits SubscribedComponent
+
+<MudSimpleTable Hover="true" Elevation="0">
+    <thead>
+        <th>Name</th>
+        <th>$ / Month</th>
+        <th> <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddSource">Add Source</MudButton></th>
+    </thead>
+
+    <tbody>
+        @foreach(IncomeSource source in BudgetToEdit.IncomeSources)
+        {
+            if(source.Id != SelectedId)
+            {
+                <tr onclick="@(() => SetSelectedSource(source.Id))">
+                    <td>@source.Name</td>
+                    <td>@source.MonthlyAmount.ToString("F2")</td>
+                    <td> 
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => RemoveSource(source)" />
+                        </MudStack>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr>
+                    <td>
+                        <MudTextField @bind-Value:get=source.Name @bind-Value:set="(string newName) => UpdateSource(source with {Name = newName})" Immediate="true"/>
+                    </td>
+                    <td>
+                        <MudNumericField T="decimal" Min="0" Step="50" Immediate="true"
+                        @bind-Value:get=source.MonthlyAmount @bind-Value:set="(decimal newAmount) => UpdateSource(source with {MonthlyAmount = newAmount})" />
+                    </td>
+                    <td>
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+                            <MudIconButton Icon="@Icons.Material.Filled.Check" Size="Size.Small" OnClick="() => SetSelectedSource(null)" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => RemoveSource(source)" />
+                        </MudStack>
+                    </td>
+                    <td></td>
+
+                </tr>
+
+            }
+        }
+    </tbody>
+</MudSimpleTable>
+
+
+@code{
+    [Parameter, EditorRequired]
+    public required Budget BudgetToEdit { get; set; }
+
+    private Guid? SelectedId { get; set; } = null;
+    private void SetSelectedSource(Guid? newId)
+    {
+        SelectedId = newId;
+        StateHasChanged();
+    }
+
+    private void AddSource() => AddAction(new UpdateBudget(BudgetToEdit with { IncomeSources = BudgetToEdit.IncomeSources.Add(IncomeSource.Default) }));
+    private void UpdateSource(IncomeSource updatedSource)
+    {
+        ImmutableList<IncomeSource> originalList = BudgetToEdit.IncomeSources;
+        IncomeSource originalSource = originalList.Single(c => c.Id == updatedSource.Id);
+        ImmutableList<IncomeSource> updatedList = originalList.Replace(originalSource, updatedSource);
+
+        AddAction(new UpdateBudget(BudgetToEdit with { IncomeSources = updatedList}));
+    }
+    private void RemoveSource(IncomeSource source) => AddAction(new UpdateBudget(BudgetToEdit with { IncomeSources = BudgetToEdit.IncomeSources.Remove(source) }));
+}

@@ -1,11 +1,12 @@
 ﻿@using BudgetAnalyzer.Shared.Data
 @namespace BudgetAnalyzer.Shared.Controls
-@inherits SubscribedComponent
+@inherits IncomePageControl
 
 <MudTable T="BudgetCategory" Items="State.SelectedBudget.Categories" Hover="true" Elevation="0" CustomFooter="true">
     <ToolBarContent>
-        <MudNumericField Label="Bank Account Balance" Min="0" Step="50" Immediate="true" @bind-Value=BankBalance
-                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+        <MudNumericField Label="Bank Account Balance" Step="50" Immediate="true" 
+        @bind-Value:get=BankBalance @bind-Value:set="SetBalance"
+        Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
     </ToolBarContent>
 
     <HeaderContent>
@@ -16,7 +17,8 @@
     <RowTemplate>
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Current Balance">
-            <MudNumericField T="decimal" Min="0" Step="50" Immediate="true" @bind-Value=@CategoryBalances[context.Id] />
+            <MudNumericField T="decimal" Step="50" Immediate="true" 
+            @bind-Value:get=@CategoryBalances[context.Id] @bind-Value:set=@((decimal newValue) => SetCategoryBalance(newValue, context.Id))/>
         </MudTd>
     </RowTemplate>
 
@@ -33,18 +35,12 @@
     <MudText Style="font-weight: 800;">@GetRecommendation()</MudText>
     <MudSpacer />
 
-    <MudButton Color="Color.Info" OnClick="SetPageToDefault">Reset</MudButton> 
+    <MudButton Color="Color.Tertiary" OnClick="SetControlToDefault">Reset</MudButton> 
 </MudStack>
 
 @code {
-    private decimal BankBalance { get; set; }
-    private Dictionary<Guid, decimal> CategoryBalances { get; set; } = default!;
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        SetPageToDefault();
-    }
+    private decimal BankBalance => State.IncomeState.BankAccountBalance;
+    private IReadOnlyDictionary<Guid, decimal> CategoryBalances => State.IncomeState.CategoryBalances;
 
     private string GetRecommendation()
     {
@@ -57,9 +53,13 @@
         return $"The budget is not balanced, {action} the budget";
     }
 
-    private void SetPageToDefault()
+    private void SetBalance(decimal newValue) => AddAction(new SetIncomeStateAction(State.IncomeState with { BankAccountBalance = newValue }));
+
+    protected override void SetControlToDefault()
     {
-        BankBalance = 0;
-        CategoryBalances = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => 0M);
+        IncomeState resetState = State.IncomeState with { StandardIncome = 0,
+                                                          CategoryBalances = State.SelectedBudget.Categories.ToDictionary(c => c.Id, c => 0M) 
+                                                        };
+        AddAction(new SetIncomeStateAction(resetState));
     }
 }

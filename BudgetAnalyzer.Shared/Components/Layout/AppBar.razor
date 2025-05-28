@@ -2,48 +2,49 @@
 @namespace BudgetAnalyzer.Shared.Layout
 @inherits SubscribedComponent
 
-<MudAppBar>
-    <MudMenu Icon="@Icons.Material.Filled.Menu" AnchorOrigin="Origin.CenterCenter">
-        <MudMenuItem Icon="@Icons.Material.Filled.FileUpload" OnClick="FileUpload">
+<MudAppBar Color="Color.Primary">
+    <MudMenu Icon="@Icons.Material.Filled.Menu" AnchorOrigin="Origin.CenterCenter" Color="Color.Secondary">
+        <MudMenuItem Icon="@Icons.Material.Filled.FileUpload" OnClick="FileUploadAsync">
             Upload App Data
         </MudMenuItem>
 
-        <MudMenuItem Icon="@Icons.Material.Filled.FileDownload" OnClick="FileDownload">
+        <MudMenuItem Icon="@Icons.Material.Filled.FileDownload" OnClick="FileDownloadAsync">
             Download App Data
         </MudMenuItem>
 
-        <MudMenuItem Icon="@Icons.Material.Filled.ContentCopy" OnClick="CopyAppData">
+        <MudMenuItem Icon="@Icons.Material.Filled.ContentCopy" OnClick="CopyAppDataAsync">
             Copy App Data to Clipboard
         </MudMenuItem>
     </MudMenu>
+
     <MudSpacer />
 
-    <MudButtonGroup Color="Color.Tertiary" Variant="Variant.Text">
-        <MudButton>
-            <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
-        </MudButton>
-        <MudButton>
-            <MudNavLink Href="/income" Match="NavLinkMatch.Prefix">Income</MudNavLink>
-        </MudButton>
-        <MudButton>
-            <MudNavLink Href="/settings" Match="NavLinkMatch.Prefix">Settings</MudNavLink>
-        </MudButton>
+    <MudButtonGroup Variant="Variant.Text" Color="Color.Secondary">
+        <MudButton OnClick="@(() => NavigateTo("/"))">Home</MudButton>
+        <MudButton OnClick="@(() => NavigateTo("/income"))">Income</MudButton>
+        <MudButton OnClick="@(() => NavigateTo("/settings"))">Settings</MudButton>
     </MudButtonGroup>
+
     <MudSpacer />
 
-    <MudIconButton Icon="@Icons.Material.Filled.Code" Href="https://github.com/Jorden-Quast/BudgetAnalyzer" />
+    <MudTooltip Text="App's Github">
+        <MudIconButton Color="Color.Secondary" Icon="@Icons.Material.Filled.Code" Href="https://github.com/Jorden-Quast/BudgetAnalyzer" />
+    </MudTooltip>
 </MudAppBar>
 
 @code{
-    public async Task FileUpload()
+    [Inject]
+    public required NavigationManager Navigation { get; set; }
+
+    private async Task FileUploadAsync()
     {
         string? fileText = await SystemIO.UploadJsonFile();
 
         if (fileText is null) return;
         AddAction(new SetAppFromJsonAction(fileText));
     }
+    private async Task FileDownloadAsync() => await SystemIO.DownloadJsonFile(State);
+    private async Task CopyAppDataAsync() => await SystemIO.CopyText(State.ToJson());
 
-    public async Task FileDownload() => await SystemIO.DownloadJsonFile(State);
-    public async Task CopyAppData() => await SystemIO.CopyText(State.ToJson());
-
+    private void NavigateTo(string path) => Navigation.NavigateTo(path);
 }

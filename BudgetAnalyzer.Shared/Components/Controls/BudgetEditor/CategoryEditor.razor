@@ -1,0 +1,79 @@
+﻿@using BudgetAnalyzer.Shared.Data
+@using System.Collections.Immutable
+@namespace BudgetAnalyzer.Shared.Controls
+@inherits SubscribedComponent
+
+<MudSimpleTable Hover="true" Elevation="0">
+    <thead>
+        <th>Name</th>
+        <th>% of Income</th>
+        <th>Cutoff</th>
+        <th>$ / Month</th>
+        <th> <MudButton StartIcon="@Icons.Material.Filled.Add" OnClick="AddCategory">Add Category</MudButton></th>
+    </thead>
+
+    <tbody>
+        @foreach(BudgetCategory category in BudgetToEdit.Categories)
+        {
+            <tr onclick="@(() => SetSelectedCategory(category.Id))">
+                @if(category.Id != SelectedId)
+                {
+                    <td>@category.Name</td>
+                    <td>@category.Percentage.ToString("F1")</td>
+                    <td>@(category.Cutoff is null ? "N/A" : category.Cutoff.Value.ToString("F2"))</td>
+                    <td>@(category.Percentage.PercentOf(BudgetToEdit.TotalMonthlyIncome))</td>
+                    <td> 
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => RemoveCategory(category)" />
+                        </MudStack>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <MudTextField @bind-Value:get=category.Name @bind-Value:set="@((string newName) => UpdateCategory(category with {Name = newName}))" Immediate="true"/>
+                    </td>
+                    <td>
+                        <MudNumericField T="decimal" Min="0" Max="100" Step="10" Immediate="true"
+                        @bind-Value:get=(decimal)category.Percentage @bind-Value:set="@((decimal newPercent) => UpdateCategory(category with {Percentage = newPercent}))" />
+                    </td>
+                    <td>
+                        <MudNumericField T="decimal?" Min="0" Step="50" Immediate="true"
+                        @bind-Value:get=category.Cutoff @bind-Value:set="@((decimal? newCutoff) => UpdateCategory(category with {Cutoff = newCutoff}))" />
+                    </td>
+                    <td>@(category.Percentage.PercentOf(BudgetToEdit.TotalMonthlyIncome))</td>
+                    <td>
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd">
+                            <MudIconButton Icon="@Icons.Material.Filled.Check" Size="Size.Small" OnClick="() => SetSelectedCategory(null)" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" OnClick="() => RemoveCategory(category)" />
+                        </MudStack>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+
+</MudSimpleTable>
+
+@code {
+    [Parameter, EditorRequired]
+    public required Budget BudgetToEdit { get; set; }
+
+    private Guid? SelectedId { get; set; } = null;
+    private void SetSelectedCategory(Guid? newId)
+    {
+        SelectedId = newId;
+        StateHasChanged();
+    }
+
+    private void AddCategory() => AddAction(new UpdateBudget(BudgetToEdit with { Categories = BudgetToEdit.Categories.Add(BudgetCategory.Default) }));
+    private void UpdateCategory(BudgetCategory updatedCategory)
+    {
+        ImmutableList<BudgetCategory> originalList = BudgetToEdit.Categories;
+        BudgetCategory originalCategory = originalList.Single(c => c.Id == updatedCategory.Id);
+        ImmutableList<BudgetCategory> updatedList = originalList.Replace(originalCategory, updatedCategory);
+
+        AddAction(new UpdateBudget(BudgetToEdit with { Categories = updatedList}));
+    }
+    private void RemoveCategory(BudgetCategory category) => AddAction(new UpdateBudget(BudgetToEdit with { Categories = BudgetToEdit.Categories.Remove(category) }));
+}

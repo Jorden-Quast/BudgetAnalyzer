@@ -1,7 +1,7 @@
 ﻿@namespace BudgetAnalyzer.Shared.Layout
 @inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider Theme="AppTheme"/>
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -13,3 +13,15 @@
         @Body
     </MudMainContent>
 </MudLayout>
+
+@code{
+    private static MudTheme AppTheme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#2F6690",
+            Secondary = "#E8C547",
+            Tertiary = "#E86A92",
+        }
+    };
+}

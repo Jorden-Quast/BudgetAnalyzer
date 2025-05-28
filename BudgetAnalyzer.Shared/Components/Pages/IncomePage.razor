@@ -1,0 +1,35 @@
+﻿@using BudgetAnalyzer.Shared.Data
+@page "/income"
+@inherits IncomePageControl
+
+<MudContainer Class="d-flex align-stretch gap-3">
+    <MudPaper Elevation="2" Style="flex-grow: 1; max-width:20%;">
+        <MudList T="IncomeControlTypes" @bind-SelectedValue=SelectedControl>
+            @foreach(IncomeControlTypes controlType in IncomeControlTypes.ControlTypes){
+                <MudTooltip Text=@controlType.Tooltip RootStyle="width:100%">
+                    <MudListItem Value="controlType">@controlType.Name</MudListItem>
+                </MudTooltip>
+            }
+        </MudList>
+    </MudPaper>
+
+    <MudPaper Elevation="2" Class="pa-4" Style="flex-grow: 4;">
+        <DynamicComponent Type="SelectedControl.ControlType" />
+    </MudPaper>
+</MudContainer>
+
+@code{
+    IncomeControlTypes SelectedControl = IncomeControlTypes.Standard;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AddBudgetCategories();
+    }
+
+    protected override void SetControlToDefault()
+    {
+        AddAction(new SetIncomeStateAction(IncomeState.Default));
+        AddBudgetCategories();
+    }
+}

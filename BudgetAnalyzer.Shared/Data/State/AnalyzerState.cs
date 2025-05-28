@@ -14,10 +14,14 @@ public record AnalyzerState
     [JsonIgnore]
     public Budget? SelectedBudget => AvailableBudgets.FirstOrDefault(b => b.Id == Settings.CurrentBudgetId);
 
+    [JsonIgnore]
+    public IncomeState IncomeState { get; init; }
+
     public AnalyzerState()
     {
         AvailableBudgets = ImmutableList.Create([Budget.Default]);
         Settings = new AppSettings(AvailableBudgets.First().Id);
+        IncomeState = IncomeState.Default;
     }
 
     public string ToJson(bool prettyOutput = true) => JsonSerializer.Serialize(this, new JsonSerializerOptions() { WriteIndented = prettyOutput});

@@ -3,37 +3,33 @@
 @namespace BudgetAnalyzer.Shared.Pages
 @inherits SubscribedComponent
 
-<MudContainer>
-    <MudStack Row="true" AlignItems="AlignItems.Stretch" StretchItems="StretchItems.End">
-        <MudPaper Elevation="2">  
-            <MudList T="Guid" @bind-SelectedValue=SelectedId>
-                <MudListItem Value="OptionsGuid" Icon="@Icons.Material.Filled.Settings">App Options</MudListItem>
-                <MudDivider />
-                <MudListSubheader Class="d-flex align-baseline">
-                    <MudText>Budgets</MudText>
-                    <MudSpacer />
-                    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="AddNewBudget" Size="Size.Small"/>
-                </MudListSubheader>
-                @foreach(Budget budget in State.AvailableBudgets)
-                {
-                    <MudListItem Value="budget.Id">@budget.Name</MudListItem>
-                }
-            </MudList>
-        </MudPaper>
-
-        <MudPaper Elevation="2" Class="pa-4"> 
-            @{
-                if(SelectedId == OptionsGuid)
-                {
-                    <AppSettingsEditor />
-                }
-                else if(State.AvailableBudgets.SingleOrDefault(b => b.Id == SelectedId) is Budget selectedBudget)
-                {
-                    <BudgetEditor BudgetToEdit="selectedBudget" />
-                }
+<MudContainer Class="d-flex align-stretch gap-3">
+    <MudPaper Elevation="2" Style="flex-grow: 1; max-width:20%;">  
+        <MudList T="Guid" @bind-SelectedValue=SelectedId>
+            <MudListItem Value="OptionsGuid" Icon="@Icons.Material.Filled.Settings">App Options</MudListItem>
+            <MudDivider />
+            <MudListSubheader Class="d-flex align-baseline">
+                <MudText>Budgets</MudText>
+                <MudSpacer />
+                <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="AddNewBudget" Size="Size.Small"/>
+            </MudListSubheader>
+            @foreach(Budget budget in State.AvailableBudgets)
+            {
+                <MudListItem Value="budget.Id">@budget.Name</MudListItem>
             }
-        </MudPaper>
-    </MudStack>
+        </MudList>
+    </MudPaper>
+
+    <MudPaper Elevation="2" Class="pa-4" Style="flex-grow: 4"> 
+        @if(SelectedId == OptionsGuid)
+        {
+            <AppSettingsEditor />
+        }
+        else if(State.AvailableBudgets.SingleOrDefault(b => b.Id == SelectedId) is Budget selectedBudget)
+        {
+            <BudgetEditor BudgetToEdit="selectedBudget" />
+        }
+    </MudPaper>
 </MudContainer>
 
 @code {
